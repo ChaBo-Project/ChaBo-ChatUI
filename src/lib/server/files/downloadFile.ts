@@ -19,7 +19,8 @@ export async function downloadFile(
 	}
 
 	const mime = file.metadata?.mime;
-	const name = file.filename;
+	// Use the original filename from metadata, fallback to the database filename
+	const name = file.metadata?.originalName || file.filename;
 
 	const fileStream = collections.bucket.openDownloadStream(file._id);
 

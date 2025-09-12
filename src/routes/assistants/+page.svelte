@@ -139,7 +139,7 @@
 				bind:value={data.selectedModel}
 				on:change={onModelChange}
 			>
-				<option value="">All models</option>
+				<option value="">All Assistants</option>
 				{#each data.models.filter((model) => !model.unlisted) as model}
 					<option value={model.name}>{model.name}</option>
 				{/each}

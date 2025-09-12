@@ -15,10 +15,10 @@
 
 <svelte:head>
 	{#if isHuggingChat}
-		<title>HuggingChat - Models</title>
-		<meta property="og:title" content="HuggingChat - Models" />
+		<title>HuggingChat - Assistants</title>
+		<meta property="og:title" content="HuggingChat - Assistants" />
 		<meta property="og:type" content="link" />
-		<meta property="og:description" content="Browse HuggingChat available models" />
+		<meta property="og:description" content="Browse HuggingChat available Assistants" />
 		<meta property="og:url" content={$page.url.href} />
 	{/if}
 </svelte:head>
@@ -26,7 +26,7 @@
 <div class="scrollbar-custom h-full overflow-y-auto py-12 max-sm:pt-8 md:py-24">
 	<div class="pt-42 mx-auto flex flex-col px-5 xl:w-[60rem] 2xl:w-[64rem]">
 		<div class="flex items-center">
-			<h1 class="text-2xl font-bold">Models</h1>
+			<h1 class="text-2xl font-bold">Assistants</h1>
 			{#if isHuggingChat}
 				<a
 					href="https://huggingface.co/spaces/huggingchat/chat-ui/discussions/372"
@@ -37,7 +37,7 @@
 				</a>
 			{/if}
 		</div>
-		<h3 class="text-gray-500">All models available on {envPublic.PUBLIC_APP_NAME}</h3>
+		<h3 class="text-gray-500">All Assistants available on {envPublic.PUBLIC_APP_NAME}</h3>
 		<dl class="mt-8 grid grid-cols-1 gap-3 sm:gap-5 xl:grid-cols-2">
 			{#each data.models.filter((el) => !el.unlisted) as model, index (model.id)}
 				<a

@@ -49,7 +49,7 @@
 	<div
 		class="col-span-1 flex flex-col overflow-y-auto whitespace-nowrap max-md:-mx-4 max-md:h-[245px] max-md:border max-md:border-b-2 md:pr-6"
 	>
-		<h3 class="pb-3 pl-3 pt-2 text-[.8rem] text-gray-800 sm:pl-1">Models</h3>
+		<h3 class="pb-3 pl-3 pt-2 text-[.8rem] text-gray-800 sm:pl-1">Assistants</h3>
 
 		{#each data.models.filter((el) => !el.unlisted) as model}
 			<a

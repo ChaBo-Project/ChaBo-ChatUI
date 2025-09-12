@@ -14,6 +14,30 @@
 		const target = e.target as HTMLInputElement;
 		files = [...files, ...(target.files ?? [])];
 	};
+
+	// Add file extensions for better browser support
+	$: acceptString = (() => {
+		const extensions: string[] = [];
+		const mimeTypesWithExtensions: string[] = [];
+		
+		for (const mimeType of mimeTypes) {
+			mimeTypesWithExtensions.push(mimeType);
+			
+			// Add common file extensions for known MIME types
+			if (mimeType === "application/geojson") {
+				extensions.push(".geojson", ".json");
+			} else if (mimeType === "text/plain") {
+				extensions.push(".txt", ".text");
+			} else if (mimeType === "application/pdf") {
+				extensions.push(".pdf");
+			} else if (mimeType === "image/*") {
+				extensions.push(".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg");
+			}
+		}
+		
+		// Combine MIME types and extensions
+		return [...mimeTypesWithExtensions, ...extensions].join(",");
+	})();
 </script>
 
 <button
@@ -23,7 +47,7 @@
 		class="absolute w-full cursor-pointer opacity-0"
 		type="file"
 		on:change={onFileChange}
-		accept={mimeTypes.join(",")}
+		accept={acceptString}
 	/>
 	<CarbonUpload class="mr-2 text-xxs" /> Upload file
 </button>

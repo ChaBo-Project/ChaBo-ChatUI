@@ -237,6 +237,7 @@
 	];
 
 	$: isFileUploadEnabled = activeMimeTypes.length > 0;
+
 </script>
 
 <svelte:window
@@ -482,7 +483,7 @@
 				class="mt-2 flex justify-between self-stretch px-1 text-xs text-gray-400/90 max-md:mb-2 max-sm:gap-2"
 			>
 				<p>
-					Model:
+					Assistant:
 					{#if !assistant}
 						{#if models.find((m) => m.id === currentModel.id)}
 							<a

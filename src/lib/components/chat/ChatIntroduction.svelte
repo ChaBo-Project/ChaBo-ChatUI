@@ -49,7 +49,7 @@
 		<div class="overflow-hidden rounded-xl border dark:border-gray-800">
 			<div class="flex p-3">
 				<div>
-					<div class="text-sm text-gray-600 dark:text-gray-400">Current Model</div>
+					<div class="text-sm text-gray-600 dark:text-gray-400">Current Assistant</div>
 					<div class="flex items-center gap-1.5 font-semibold max-sm:text-smd">
 						{#if currentModel.logoUrl}
 							<img
@@ -69,9 +69,47 @@
 					><IconGear /></a
 				>
 			</div>
-			<ModelCardMetadata variant="dark" model={currentModel} />
+			<!-- <ModelCardMetadata variant="dark" model={currentModel} /> -->
 		</div>
 	</div>
+	
+	<!-- ADD MODEL-SPECIFIC INSTRUCTIONS HERE (after line 73) -->
+	{#if currentModel.name === 'uganda_auditbot'}
+		<div class="lg:col-span-2 lg:pl-24 mt-4">
+			<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
+				<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Uganda Auditbot Instructions</h3>
+				<p class="text-blue-700 dark:text-blue-300 text-sm whitespace-pre-line">
+					This assistant specializes in Uganda fiscal documents. Upload PDFs or Word documents, for analysis. Ask questions about budget allocations, financial reports, or audit findings.
+				</p>
+			</div>
+		</div>
+	{:else if currentModel.name === 'asistente_eudr'}
+		<div class="lg:col-span-2 lg:pl-24 mt-4">
+			<div class="rounded-lg bg-green-50 border border-green-200 p-4 dark:bg-green-900/20 dark:border-green-700">
+				<h3 class="font-semibold text-green-800 dark:text-green-200 mb-2">EUDR Assistant Instructions</h3>
+				<p class="text-green-700 dark:text-green-300 text-sm whitespace-pre-line">
+					This assistant works with the EUDR vector store and Whisp API data. Query the vector store with natural language or upload a GeoJSON file for analysis by the Whisp API.
+
+					<strong>Note:</strong> to initialize Geojson workflow: Upload the file, then write any word in the prompt (e.g. "test") and click submit.
+				</p>
+			</div>
+		</div>
+	{:else if currentModel.name === 'chatfed_poc'}
+		<div class="lg:col-span-2 lg:pl-24 mt-4">
+			<div class="rounded-lg bg-purple-50 border border-purple-200 p-4 dark:bg-purple-900/20 dark:border-purple-700">
+				<h3 class="font-semibold text-purple-800 dark:text-purple-200 mb-2">ChatFed PoC Instructions</h3>
+				<p class="text-purple-700 dark:text-purple-300 text-sm whitespace-pre-line">
+					This is a proof-of-concept assistant with multi-resource workflows.
+					- Natural language queries: Uganda audit assistance vector store
+					- Document upload: Direct analysis or combine with a query for the Uganda audit assistance vector store
+					- GeoJSON upload: Analysis via Whisp API
+
+					<strong>Note:</strong> to initialize Geojson workflow: Upload the file, then write any word in the prompt (e.g. "test") and click submit.
+				</p>
+			</div>
+		</div>
+	{/if}
+	
 	{#if currentModel.promptExamples}
 		<div class="lg:col-span-3 lg:mt-6">
 			<p class="mb-3 text-gray-600 dark:text-gray-300">Examples</p>
