@@ -27,6 +27,9 @@ import { endpointCohere, endpointCohereParametersSchema } from "./cohere/endpoin
 import endpointLangserve, {
 	endpointLangserveParametersSchema,
 } from "./langserve/endpointLangserve";
+import endpointLangserveStreaming, {
+	endpointLangserveStreamingParametersSchema,
+} from "./langserve/endpointLangserveStreaming";
 
 import type { Tool, ToolCall, ToolResult } from "$lib/types/Tool";
 import type { ObjectId } from "mongodb";
@@ -75,6 +78,7 @@ export const endpoints = {
 	cloudflare: endpointCloudflare,
 	cohere: endpointCohere,
 	langserve: endpointLangserve,
+	"langserve-streaming": endpointLangserveStreaming,
 };
 
 export const endpointSchema = z.discriminatedUnion("type", [
@@ -91,5 +95,6 @@ export const endpointSchema = z.discriminatedUnion("type", [
 	endpointCloudflareParametersSchema,
 	endpointCohereParametersSchema,
 	endpointLangserveParametersSchema,
+	endpointLangserveStreamingParametersSchema,
 ]);
 export default endpoints;

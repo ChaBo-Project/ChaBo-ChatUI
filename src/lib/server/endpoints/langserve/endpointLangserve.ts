@@ -32,7 +32,7 @@ export function endpointLangserve(
 
 		// If files are present and fileUploadUrl is configured, use file upload endpoint
 		if (hasFiles && fileUploadUrl) {
-			return handleFileUpload(fileUploadUrl, messages, prompt, inputKey);
+			return handleFileUpload(fileUploadUrl, messages, prompt);
 		} else {
 			// Use the regular text-only endpoint
 			return handleTextOnly(url, prompt, inputKey);
@@ -67,7 +67,7 @@ async function* handleFileUpload(
 			const buffer = Buffer.from(file.value, "base64");
 
 			// Create a proper File object with the correct name and mime type
-			const fileBlob = new Blob([buffer], { type: file.mime });
+			const fileBlob = new Blob([buffer as unknown as BlobPart], { type: file.mime });
 
 			// Ensure the filename has the correct extension based on mime type
 			let filename = file.name;

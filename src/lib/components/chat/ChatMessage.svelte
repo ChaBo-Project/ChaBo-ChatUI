@@ -357,7 +357,7 @@
 			{/if}
 
 			<!-- Endpoint web sources -->
-			{#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
+			<!-- {#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
 				<div class="mt-4 text-sm">
 					<div class="text-gray-400 mb-2">Sources:</div>
 					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
@@ -379,7 +379,32 @@
 					</div>
 				</div>
 			{/if}
-		</div>
+		</div> -->
+
+			<!-- Endpoint web sources -->
+			{#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
+				<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
+					<div class="text-gray-400">Sources:<br /></div>
+					{#each messageFinalAnswer.webSources as { uri, title }, index}
+						<a
+							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+							href={uri}
+							target="_blank"
+						>
+							<span class="text-gray-500 dark:text-gray-400 mr-1">
+								[{index + 1}]
+							</span>
+							<img
+								class="h-3.5 w-3.5 rounded"
+								src="https://www.google.com/s2/favicons?sz=64&domain_url={new URL(uri).hostname || 'placeholder'}"
+								alt="{title} favicon"
+							/>
+							<div>{title}</div>
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</div>	
 
 		{#if !loading && (message.content || toolUpdates)}
 			<div
