@@ -74,7 +74,7 @@
 	</div>
 	
 	<!-- ADD MODEL-SPECIFIC INSTRUCTIONS HERE (after line 73) -->
-	<!-- {#if currentModel.name === 'uganda_auditbot'}
+	{#if currentModel.name === 'uganda_auditbot'}
 		<div class="lg:col-span-2 lg:pl-24 mt-4">
 			<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
 				<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Uganda Auditbot Instructions</h3>
@@ -108,9 +108,9 @@
 				</p>
 			</div>
 		</div>
-	{/if} -->
+	{/if}
 
-	{#if currentModel.instructions}
+	<!-- {#if currentModel.instructions}
 	<div class="lg:col-span-2 lg:pl-24 mt-4">
 		<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
 			<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">{currentModel.instructions.title || 'Model Instructions'}</h3>
@@ -119,7 +119,7 @@
 			</p>
 		</div>
 	</div>
-	{/if}
+	{/if} -->
 	
 	{#if currentModel.promptExamples}
 		<div class="lg:col-span-3 lg:mt-6">

@@ -49,13 +49,13 @@ const modelConfig = z.object({
 			})
 		)
 		.optional(),
-	instructions: z
-		.object({
-			title: z.string().optional(),
-			content: z.string().min(1),
-			color: z.string().optional(),
-		})
-		.optional(),
+	// instructions: z
+	// 	.object({
+	// 		title: z.string().optional(),
+	// 		content: z.string().min(1),
+	// 		color: z.string().optional(),
+	// 	})
+	// 	.optional(),
 	endpoints: z.array(endpointSchema).optional(),
 	parameters: z
 		.object({
