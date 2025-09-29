@@ -95,7 +95,18 @@
 
 	$: message = messages.find((m) => m.id === id) ?? ({} as Message);
 
+	// basic debugging
+	// $: {
+	// 	console.log('=== BASIC DEBUG START ===');
+	// 	console.log('Message found:', !!message);
+	// 	console.log('Message ID:', message.id);
+	// 	console.log('Message updates:', message.updates);
+	// 	console.log('Message updates length:', message.updates?.length || 0);
+	// 	console.log('=== BASIC DEBUG END ===');
+	// }
+
 	$: urlNotTrailing = $page.url.pathname.replace(/\/$/, "");
+
 
 	const dispatch = createEventDispatcher<{
 		retry: { content?: string; id: Message["id"] };
@@ -178,16 +189,23 @@
 		({ type }) => type === MessageUpdateType.FinalAnswer
 	) as MessageFinalAnswerUpdate;
 
-	$: {
-		if (messageFinalAnswer) {
-			console.log('RAG Debug - messageFinalAnswer found:', messageFinalAnswer);
-			console.log('RAG Debug - webSources in messageFinalAnswer:', messageFinalAnswer.webSources);
-			console.log('RAG Debug - webSources length:', messageFinalAnswer.webSources?.length || 0);
-		} else {
-			console.log('RAG Debug - No messageFinalAnswer found');
-			console.log('RAG Debug - All message updates:', message.updates);
-		}
-	}
+
+	// $: {
+	// 	console.log('RAG Debug - Raw message:', message);
+	// 	console.log('RAG Debug - Message updates:', message.updates);
+	// 	console.log('RAG Debug - Message updates types:', message.updates?.map(u => u.type));
+		
+	// 	if (messageFinalAnswer) {
+	// 		console.log('RAG Debug - messageFinalAnswer found:', messageFinalAnswer);
+	// 		console.log('RAG Debug - webSources in messageFinalAnswer:', messageFinalAnswer.webSources);
+	// 		console.log('RAG Debug - webSources length:', messageFinalAnswer.webSources?.length || 0);
+	// 		console.log('RAG Debug - Condition check:', !!(messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length));
+	// 	} else {
+	// 		console.log('RAG Debug - No messageFinalAnswer found');
+	// 		console.log('RAG Debug - All message updates:', message.updates);
+	// 		console.log('RAG Debug - Looking for type:', MessageUpdateType.FinalAnswer);
+	// 	}
+	// }
 
 	// filter all updates with type === "tool" then group them by uuid field
 
@@ -337,7 +355,7 @@
 			<!-- Web Search sources -->
 			{#if webSearchSources?.length}
 				<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
-					<div class="text-gray-400">Sources:<br /></div>
+					<div class="text-gray-400">Sources TEST #1:<br /></div>
 					{#each webSearchSources as { link, title }}
 						<a
 							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
@@ -356,7 +374,19 @@
 				</div>
 			{/if}
 
-			<!-- Endpoint web sources -->
+			<!-- Debug display for webSources -->
+			<!-- {#if messageFinalAnswer}
+			<div class="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-xs">
+				<strong>Debug Info:</strong><br/>
+				webSources exists: {!!messageFinalAnswer.webSources}<br/>
+				webSources length: {messageFinalAnswer.webSources?.length || 0}<br/>
+				webSources type: {typeof messageFinalAnswer.webSources}<br/>
+				webSources is array: {Array.isArray(messageFinalAnswer.webSources)}<br/>
+				webSources content: {JSON.stringify(messageFinalAnswer.webSources)}
+			</div>
+			{/if} -->
+
+			<!-- Endpoint web sources Original -->
 			<!-- {#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
 				<div class="mt-4 text-sm">
 					<div class="text-gray-400 mb-2">Sources:</div>
@@ -378,32 +408,33 @@
 						{/each}
 					</div>
 				</div>
-			{/if}
-		</div> -->
+			{/if} -->
 
-			<!-- Endpoint web sources -->
-			{#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
-				<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
-					<div class="text-gray-400">Sources:<br /></div>
-					{#each messageFinalAnswer.webSources as { uri, title }, index}
-						<a
-							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
-							href={uri}
-							target="_blank"
-						>
-							<span class="text-gray-500 dark:text-gray-400 mr-1">
-								[{index + 1}]
-							</span>
-							<img
-								class="h-3.5 w-3.5 rounded"
-								src="https://www.google.com/s2/favicons?sz=64&domain_url={new URL(uri).hostname || 'placeholder'}"
-								alt="{title} favicon"
-							/>
-							<div>{title}</div>
-						</a>
-					{/each}
+			<!-- SIMPLIFIED  -->
+			{#if messageFinalAnswer}
+				<div class="mt-4 text-sm">
+					<div class="text-gray-400 mb-2">Sources:</div>
+					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5"></div>
+					{#if messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
+						{#each messageFinalAnswer.webSources as { uri, title }, index}
+							<div
+								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
+							>
+								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+									[{index + 1}]
+								</span>
+								<img
+									class="h-3.5 w-3.5 rounded"
+									src="/favicon.ico"
+									alt="Document icon"
+								/>
+								<div>{title}</div>
+							</div>
+						{/each}
+					{/if}
 				</div>
 			{/if}
+
 		</div>	
 
 		{#if !loading && (message.content || toolUpdates)}

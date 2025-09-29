@@ -1,7 +1,10 @@
 import { buildPrompt } from "$lib/buildPrompt";
 import { z } from "zod";
-import type { Endpoint, EndpointMessage } from "../endpoints";
-import type { TextGenerationStreamOutput } from "@huggingface/inference";
+import type {
+	Endpoint,
+	EndpointMessage,
+	TextGenerationStreamOutputWithToolsAndWebSources,
+} from "../endpoints";
 import { logger } from "$lib/server/logger";
 
 export const endpointLangserveStreamingParametersSchema = z.object({
@@ -52,7 +55,7 @@ async function* handleStreamingFileUpload(
 	prompt: string,
 	inputKey: string,
 	fileInputKey: string
-): AsyncGenerator<TextGenerationStreamOutput> {
+): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
 	// Find the latest user message with files
 	const latestUserMessage = messages
 		.filter((msg) => msg.from === "user")
@@ -111,7 +114,7 @@ async function* handleTextOnlyStreaming(
 	url: string,
 	prompt: string,
 	inputKey: string
-): AsyncGenerator<TextGenerationStreamOutput> {
+): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
 	const r = await fetch(`${url}/stream`, {
 		method: "POST",
 		headers: {
@@ -130,7 +133,9 @@ async function* handleTextOnlyStreaming(
 	return yield* handleStreamingResponse(r);
 }
 
-async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerationStreamOutput> {
+async function* handleStreamingResponse(
+	r: Response
+): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
 	const encoder = new TextDecoderStream();
 	const reader = r.body?.pipeThrough(encoder).getReader();
 
@@ -138,7 +143,7 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 	let generatedText = "";
 	let tokenId = 0;
 	let accumulatedData = "";
-	let webSources: { uri: string; title: string }[] | null = null;
+	const webSources: { uri: string; title: string }[] = []; // Initialize as empty array instead of undefined
 
 	while (!stop) {
 		const out = (await reader?.read()) ?? { done: false, value: undefined };
@@ -174,8 +179,8 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 						},
 						generated_text: generatedText,
 						details: null,
-						webSources,
-					} satisfies TextGenerationStreamOutput;
+						webSources: webSources.length > 0 ? webSources : undefined,
+					} satisfies TextGenerationStreamOutputWithToolsAndWebSources;
 					reader?.cancel();
 					continue;
 				}
@@ -196,8 +201,8 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 						},
 						generated_text: generatedText,
 						details: null,
-						webSources,
-					} satisfies TextGenerationStreamOutput;
+						webSources: webSources.length > 0 ? webSources : undefined,
+					} satisfies TextGenerationStreamOutputWithToolsAndWebSources;
 					reader?.cancel();
 					continue;
 				}
@@ -205,12 +210,53 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 				try {
 					const data = JSON.parse(jsonString);
 
-					// Extract webSources if present
+					// Debug: Log the structure of the data package
+					// console.log('=== STREAMING DATA DEBUG ===');
+					// console.log('Data package:', JSON.stringify(data, null, 2));
+					// console.log('Data keys:', Object.keys(data));
+					// console.log('webSources in data:', data.webSources);
+					// console.log('sources in data:', data.sources);
+					// console.log('=== END STREAMING DATA DEBUG ===');
+
+					// Extract webSources if present - accumulate instead of overwrite
 					if (data.webSources && Array.isArray(data.webSources)) {
-						webSources = data.webSources;
+						console.log("Found webSources in data:", data.webSources);
+						// Add new sources to existing ones, avoiding duplicates
+						for (const source of data.webSources) {
+							if (!webSources.some((existing) => existing.uri === source.uri)) {
+								webSources.push(source);
+							}
+						}
 					} else if (data.sources && Array.isArray(data.sources)) {
+						console.log("Found sources in data:", data.sources);
 						// Handle alternative naming
-						webSources = data.sources;
+						for (const source of data.sources) {
+							if (!webSources.some((existing) => existing.uri === source.uri)) {
+								webSources.push(source);
+							}
+						}
+					} else if (typeof data === "string" && data.includes("**Sources:**")) {
+						// Parse sources from markdown text
+						console.log("Parsing sources from markdown text");
+						console.log("Full text to parse:", data);
+
+						const sourceRegex = /\[([^\]]+)\]\(doc:\/\/([^)]+)\)/g;
+						let match;
+						let matchCount = 0;
+
+						while ((match = sourceRegex.exec(data)) !== null) {
+							matchCount++;
+							console.log(`Match ${matchCount}:`, match[1], "->", match[2]);
+							const title = match[1];
+							const uri = `doc://${match[2]}`;
+
+							// Add all sources (no deduplication)
+							webSources.push({ uri, title });
+							console.log("Added source:", { uri, title });
+						}
+
+						console.log("Total matches found:", matchCount);
+						console.log("Final webSources:", webSources);
 					}
 
 					// Extract token text from various possible formats
@@ -227,9 +273,18 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 						tokenText = data.delta.content;
 					}
 
+					// If we found sources in markdown format, remove the sources section from tokenText
+					if (typeof data === "string" && data.includes("**Sources:**")) {
+						// Remove the sources section from the token text
+						const sourcesIndex = tokenText.indexOf("**Sources:**");
+						if (sourcesIndex !== -1) {
+							tokenText = tokenText.substring(0, sourcesIndex).trim();
+						}
+					}
+
 					if (tokenText) {
 						generatedText += tokenText;
-						const output: TextGenerationStreamOutput = {
+						const output: TextGenerationStreamOutputWithToolsAndWebSources = {
 							token: {
 								id: tokenId++,
 								text: tokenText,
@@ -239,6 +294,12 @@ async function* handleStreamingResponse(r: Response): AsyncGenerator<TextGenerat
 							generated_text: null,
 							details: null,
 						};
+
+						// Only add webSources if they exist
+						if (webSources.length > 0) {
+							output.webSources = webSources;
+						}
+
 						yield output;
 					}
 				} catch (e) {
