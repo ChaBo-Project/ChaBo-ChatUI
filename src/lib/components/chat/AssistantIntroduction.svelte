@@ -146,11 +146,11 @@
 						<span class="max-sm:hidden"> Share </span>
 					{/if}
 				</button>
-				<a
+				<!-- <a
 					href="{base}/settings/assistants/{assistant._id.toString()}"
 					class="flex h-7 items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-gray-800 shadow-sm hover:shadow-inner dark:border-gray-700 dark:bg-gray-700 dark:text-gray-300/90 dark:hover:bg-gray-800 md:text-sm"
 					><IconGear class="text-xxs" />Settings</a
-				>
+				> -->
 			</div>
 		</div>
 		<button

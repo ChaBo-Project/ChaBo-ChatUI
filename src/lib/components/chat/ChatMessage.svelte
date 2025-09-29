@@ -95,16 +95,6 @@
 
 	$: message = messages.find((m) => m.id === id) ?? ({} as Message);
 
-	// basic debugging
-	// $: {
-	// 	console.log('=== BASIC DEBUG START ===');
-	// 	console.log('Message found:', !!message);
-	// 	console.log('Message ID:', message.id);
-	// 	console.log('Message updates:', message.updates);
-	// 	console.log('Message updates length:', message.updates?.length || 0);
-	// 	console.log('=== BASIC DEBUG END ===');
-	// }
-
 	$: urlNotTrailing = $page.url.pathname.replace(/\/$/, "");
 
 
@@ -374,18 +364,6 @@
 				</div>
 			{/if}
 
-			<!-- Debug display for webSources -->
-			<!-- {#if messageFinalAnswer}
-			<div class="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-xs">
-				<strong>Debug Info:</strong><br/>
-				webSources exists: {!!messageFinalAnswer.webSources}<br/>
-				webSources length: {messageFinalAnswer.webSources?.length || 0}<br/>
-				webSources type: {typeof messageFinalAnswer.webSources}<br/>
-				webSources is array: {Array.isArray(messageFinalAnswer.webSources)}<br/>
-				webSources content: {JSON.stringify(messageFinalAnswer.webSources)}
-			</div>
-			{/if} -->
-
 			<!-- Endpoint web sources Original -->
 			<!-- {#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
 				<div class="mt-4 text-sm">
@@ -410,7 +388,7 @@
 				</div>
 			{/if} -->
 
-			<!-- SIMPLIFIED  -->
+			<!-- SIMPLIFIED SOURCES DISPLAY  -->
 			{#if messageFinalAnswer}
 				<div class="mt-4 text-sm">
 					<div class="text-gray-400 mb-2">Sources:</div>

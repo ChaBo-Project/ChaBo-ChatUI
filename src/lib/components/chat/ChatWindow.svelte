@@ -486,10 +486,14 @@
 					Assistant:
 					{#if !assistant}
 						{#if models.find((m) => m.id === currentModel.id)}
-							<a
+							<!-- <a
 								href="{base}/settings/{currentModel.id}"
 								class="inline-flex items-center hover:underline"
 								>{currentModel.displayName}<CarbonCaretDown class="text-xxs" /></a
+							> -->
+							<span
+								class="inline-flex items-center"
+								>{currentModel.displayName}</span
 							>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
@@ -499,11 +503,15 @@
 					{:else}
 						{@const model = models.find((m) => m.id === assistant?.modelId)}
 						{#if model}
-							<a
+							<!-- <a
 								href="{base}/settings/assistants/{assistant._id}"
 								class="inline-flex items-center border-b hover:text-gray-600 dark:border-gray-700 dark:hover:text-gray-300"
 								>{model?.displayName}<CarbonCaretDown class="text-xxs" /></a
-							>
+							> -->
+							<span
+							class="inline-flex items-center border-b dark:border-gray-700"
+							>{model?.displayName}</span
+						>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
 								{currentModel.id}

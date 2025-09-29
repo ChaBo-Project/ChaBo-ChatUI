@@ -63,18 +63,18 @@
 						{currentModel.displayName}
 					</div>
 				</div>
-				<a
+				<!-- <a
 					href="{base}/settings/{currentModel.id}"
 					class="btn ml-auto flex h-7 w-7 self-start rounded-full bg-gray-100 p-1 text-xs hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-600"
 					><IconGear /></a
-				>
+				> -->
 			</div>
 			<!-- <ModelCardMetadata variant="dark" model={currentModel} /> -->
 		</div>
 	</div>
 	
 	<!-- ADD MODEL-SPECIFIC INSTRUCTIONS HERE (after line 73) -->
-	{#if currentModel.name === 'uganda_auditbot'}
+	<!-- {#if currentModel.name === 'uganda_auditbot'}
 		<div class="lg:col-span-2 lg:pl-24 mt-4">
 			<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
 				<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Uganda Auditbot Instructions</h3>
@@ -108,6 +108,17 @@
 				</p>
 			</div>
 		</div>
+	{/if} -->
+
+	{#if currentModel.instructions}
+	<div class="lg:col-span-2 lg:pl-24 mt-4">
+		<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
+			<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">{currentModel.instructions.title || 'Model Instructions'}</h3>
+			<p class="text-blue-700 dark:text-blue-300 text-sm whitespace-pre-line">
+				{currentModel.instructions.content}
+			</p>
+		</div>
+	</div>
 	{/if}
 	
 	{#if currentModel.promptExamples}
