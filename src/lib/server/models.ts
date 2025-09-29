@@ -49,13 +49,13 @@ const modelConfig = z.object({
 			})
 		)
 		.optional(),
-	// instructions: z
-	// 	.object({
-	// 		title: z.string().optional(),
-	// 		content: z.string().min(1),
-	// 		color: z.string().optional(),
-	// 	})
-	// 	.optional(),
+	instructions: z
+		.object({
+			title: z.string().optional(),
+			content: z.string().min(1),
+			color: z.string().optional(),
+		})
+		.optional(),
 	endpoints: z.array(endpointSchema).optional(),
 	parameters: z
 		.object({
@@ -78,7 +78,20 @@ const modelConfig = z.object({
 	systemRoleSupported: z.boolean().default(true),
 });
 
-const modelsRaw = z.array(modelConfig).parse(JSON5.parse(env.MODELS));
+let modelsRaw;
+try {
+	logger.info("Parsing MODELS environment variable");
+	const parsedModels = JSON5.parse(env.MODELS);
+	logger.info("JSON5 parse successful", { modelCount: parsedModels?.length });
+	modelsRaw = z.array(modelConfig).parse(parsedModels);
+	logger.info("Zod validation successful");
+} catch (error) {
+	logger.error(error, "Failed to parse or validate MODELS environment variable", {
+		modelsEnvLength: env.MODELS?.length,
+		modelsEnvPreview: env.MODELS?.substring(0, 200),
+	});
+	throw error;
+}
 
 async function getChatPromptRender(
 	m: z.infer<typeof modelConfig>

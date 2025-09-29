@@ -323,11 +323,34 @@
 				{/each}
 			{/if}
 
-			<div
+			<!-- <div
 				class="prose max-w-none dark:prose-invert max-sm:prose-sm prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-pre:bg-gray-800 dark:prose-pre:bg-gray-900"
 				bind:this={contentEl}
 			>
 				{#if isLast && loading && $settings.disableStream}
+					<IconLoading classNames="loading inline ml-2 first:ml-0" />
+				{/if}
+				{#each tokens as token}
+					{#if token.type === "code"}
+						<CodeBlock lang={token.lang} code={unsanitizeMd(token.text)} />
+					{:else}
+						{#await marked.parse(token.raw, options) then parsed}
+							### COMMENTED OUT eslint-disable-next-line svelte/no-at-html-tags
+							{@html DOMPurify.sanitize(parsed)}
+						{/await}
+					{/if}
+				{/each}
+			</div> -->
+
+			<div
+				class="prose max-w-none dark:prose-invert max-sm:prose-sm prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-pre:bg-gray-800 dark:prose-pre:bg-gray-900"
+				bind:this={contentEl}
+			>
+				{#if isLast && loading && !message.content && tokens.length === 0}
+					<p class="text-gray-500 dark:text-gray-400 italic">
+						Thinking about your query  
+					</p>
+				{:else if isLast && loading && $settings.disableStream}
 					<IconLoading classNames="loading inline ml-2 first:ml-0" />
 				{/if}
 				{#each tokens as token}
