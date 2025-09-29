@@ -143,7 +143,8 @@ async function* handleStreamingResponse(
 	let generatedText = "";
 	let tokenId = 0;
 	let accumulatedData = "";
-	const webSources: { uri: string; title: string }[] = []; // Initialize as empty array instead of undefined
+	// Update the webSources type to match the type definition
+	const webSources: { uri: string; title: string }[] = [];
 
 	while (!stop) {
 		const out = (await reader?.read()) ?? { done: false, value: undefined };
@@ -250,7 +251,7 @@ async function* handleStreamingResponse(
 							const title = match[1];
 							const uri = `doc://${match[2]}`;
 
-							// Add all sources (no deduplication)
+							// Add source without originalNumber since it's not in the type definition
 							webSources.push({ uri, title });
 							console.log("Added source:", { uri, title });
 						}

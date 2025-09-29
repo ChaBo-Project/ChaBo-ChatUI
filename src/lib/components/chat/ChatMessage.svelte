@@ -416,12 +416,14 @@
 					<div class="text-gray-400 mb-2">Sources:</div>
 					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5"></div>
 					{#if messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
+						{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
+						{@const uniqueCitations = [...new Set(allCitations.map(match => parseInt(match.slice(1, -1))))].sort((a, b) => a - b)}
 						{#each messageFinalAnswer.webSources as { uri, title }, index}
 							<div
 								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
 							>
 								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
-									[{index + 1}]
+									[{uniqueCitations[index] || index + 1}]
 								</span>
 								<img
 									class="h-3.5 w-3.5 rounded"
