@@ -406,7 +406,8 @@
 				{:else}
 					<div class="ml-auto gap-2">
 						{#if isFileUploadEnabled}
-							<UploadBtn bind:files mimeTypes={activeMimeTypes} classNames="ml-auto" />
+							<!-- <UploadBtn bind:files mimeTypes={activeMimeTypes} classNames="ml-auto" /> -->
+							<UploadBtn bind:files mimeTypes={activeMimeTypes} currentModel={currentModel} classNames="ml-auto" />
 						{/if}
 						{#if messages && lastMessage && lastMessage.interrupted && !isReadOnly}
 							<ContinueBtn

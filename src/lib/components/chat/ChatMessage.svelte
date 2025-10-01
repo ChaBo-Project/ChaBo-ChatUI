@@ -368,7 +368,7 @@
 			<!-- Web Search sources -->
 			{#if webSearchSources?.length}
 				<div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm">
-					<div class="text-gray-400">Sources TEST #1:<br /></div>
+					<div class="text-gray-400">Sources:<br /></div>
 					{#each webSearchSources as { link, title }}
 						<a
 							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
@@ -412,7 +412,7 @@
 			{/if} -->
 
 			<!-- SIMPLIFIED SOURCES DISPLAY  -->
-			{#if messageFinalAnswer}
+			<!-- {#if messageFinalAnswer}
 				<div class="mt-4 text-sm">
 					<div class="text-gray-400 mb-2">Sources:</div>
 					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5"></div>
@@ -435,6 +435,32 @@
 							</div>
 						{/each}
 					{/if}
+				</div>
+			{/if} -->
+
+				<!-- SIMPLIFIED SOURCES DISPLAY  -->
+			{#if messageFinalAnswer && messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
+				<div class="mt-4 text-sm">
+					<div class="text-gray-400 mb-2">Sources:</div>
+					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+						{#each messageFinalAnswer.webSources as { uri, title }, index}
+							{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
+							{@const uniqueCitations = [...new Set(allCitations.map(match => parseInt(match.slice(1, -1))))].sort((a, b) => a - b)}
+							<div
+								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
+							>
+								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+									[{uniqueCitations[index] || index + 1}]
+								</span>
+								<img
+									class="h-3.5 w-3.5 rounded"
+									src="/favicon.ico"
+									alt="Document icon"
+								/>
+								<div>{title}</div>
+							</div>
+						{/each}
+					</div>
 				</div>
 			{/if}
 

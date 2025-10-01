@@ -6,6 +6,7 @@ import type {
 	TextGenerationStreamOutputWithToolsAndWebSources,
 } from "../endpoints";
 import { logger } from "$lib/server/logger";
+import { env } from "$env/dynamic/private";
 
 export const endpointLangserveStreamingParametersSchema = z.object({
 	weight: z.number().int().positive().default(1),
@@ -15,12 +16,13 @@ export const endpointLangserveStreamingParametersSchema = z.object({
 	streamingFileUploadUrl: z.string().url(),
 	inputKey: z.string().default("text"),
 	fileInputKey: z.string().default("files"),
+	accessToken: z.string().default(env.HF_TOKEN ?? env.HF_ACCESS_TOKEN ?? ""),
 });
 
 export function endpointLangserveStreaming(
 	input: z.input<typeof endpointLangserveStreamingParametersSchema>
 ): Endpoint {
-	const { url, model, streamingFileUploadUrl, inputKey, fileInputKey } =
+	const { url, model, streamingFileUploadUrl, inputKey, fileInputKey, accessToken } =
 		endpointLangserveStreamingParametersSchema.parse(input);
 
 	return async ({ messages, preprompt, continueMessage }) => {
@@ -40,11 +42,12 @@ export function endpointLangserveStreaming(
 				messages,
 				prompt,
 				inputKey,
-				fileInputKey
+				fileInputKey,
+				accessToken
 			);
 		} else {
 			// Use the regular text-only streaming endpoint
-			return handleTextOnlyStreaming(url, prompt, inputKey);
+			return handleTextOnlyStreaming(url, prompt, inputKey, accessToken);
 		}
 	};
 }
@@ -54,7 +57,8 @@ async function* handleStreamingFileUpload(
 	messages: EndpointMessage[],
 	prompt: string,
 	inputKey: string,
-	fileInputKey: string
+	fileInputKey: string,
+	accessToken: string
 ): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
 	// Find the latest user message with files
 	const latestUserMessage = messages
@@ -91,12 +95,18 @@ async function* handleStreamingFileUpload(
 		},
 	};
 
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+		Accept: "text/event-stream",
+	};
+
+	if (accessToken) {
+		headers.Authorization = `Bearer ${accessToken}`;
+	}
+
 	const r = await fetch(`${streamingFileUploadUrl}/stream`, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Accept: "text/event-stream",
-		},
+		headers,
 		body: JSON.stringify(payload),
 	});
 
@@ -113,14 +123,21 @@ async function* handleStreamingFileUpload(
 async function* handleTextOnlyStreaming(
 	url: string,
 	prompt: string,
-	inputKey: string
+	inputKey: string,
+	accessToken: string
 ): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+		Accept: "text/event-stream",
+	};
+
+	if (accessToken) {
+		headers.Authorization = `Bearer ${accessToken}`;
+	}
+
 	const r = await fetch(`${url}/stream`, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Accept: "text/event-stream",
-		},
+		headers,
 		body: JSON.stringify({
 			input: { [inputKey]: prompt },
 		}),
