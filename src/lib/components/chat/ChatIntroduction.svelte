@@ -46,7 +46,7 @@
 				>
 			</AnnouncementBanner>
 		{/each}
-		<div class="overflow-hidden rounded-xl border dark:border-gray-800">
+		<!-- <div class="overflow-hidden rounded-xl border dark:border-gray-800">
 			<div class="flex p-3">
 				<div>
 					<div class="text-sm text-gray-600 dark:text-gray-400">Current Assistant</div>
@@ -63,14 +63,14 @@
 						{currentModel.displayName}
 					</div>
 				</div>
-				<!-- <a
+				<a
 					href="{base}/settings/{currentModel.id}"
 					class="btn ml-auto flex h-7 w-7 self-start rounded-full bg-gray-100 p-1 text-xs hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-600"
 					><IconGear /></a
-				> -->
+				>
 			</div>
-			<!-- <ModelCardMetadata variant="dark" model={currentModel} /> -->
-		</div>
+			<ModelCardMetadata variant="dark" model={currentModel} />
+		</div> -->
 	</div>
 	
 	<!-- ADD MODEL-SPECIFIC INSTRUCTIONS HERE (after line 73) -->

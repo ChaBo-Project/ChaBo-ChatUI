@@ -41,13 +41,14 @@ export function endpointLangserveStreaming(
 				streamingFileUploadUrl,
 				messages,
 				prompt,
+				preprompt,
 				inputKey,
 				fileInputKey,
 				accessToken
 			);
 		} else {
 			// Use the regular text-only streaming endpoint
-			return handleTextOnlyStreaming(url, prompt, inputKey, accessToken);
+			return handleTextOnlyStreaming(url, messages, prompt, preprompt, inputKey, accessToken);
 		}
 	};
 }
@@ -56,6 +57,7 @@ async function* handleStreamingFileUpload(
 	streamingFileUploadUrl: string,
 	messages: EndpointMessage[],
 	prompt: string,
+	preprompt: string | undefined,
 	inputKey: string,
 	fileInputKey: string,
 	accessToken: string
@@ -87,11 +89,20 @@ async function* handleStreamingFileUpload(
 
 	const validFiles = fileData.filter((f) => f !== null);
 
+	// Structure the message history for the orchestrator
+	const structuredMessages = messages.map((msg) => ({
+		role: msg.from,
+		content: msg.content,
+		...(msg.files && msg.files.length > 0 && { has_files: true }),
+	}));
+
 	// Use JSON payload for streaming endpoint
 	const payload = {
 		input: {
-			[inputKey]: prompt,
+			[inputKey]: prompt, // Full rendered prompt (for backward compatibility)
 			[fileInputKey]: validFiles,
+			messages: structuredMessages, // Structured conversation history
+			preprompt,
 		},
 	};
 
@@ -122,7 +133,9 @@ async function* handleStreamingFileUpload(
 
 async function* handleTextOnlyStreaming(
 	url: string,
+	messages: EndpointMessage[],
 	prompt: string,
+	preprompt: string | undefined,
 	inputKey: string,
 	accessToken: string
 ): AsyncGenerator<TextGenerationStreamOutputWithToolsAndWebSources> {
@@ -135,11 +148,21 @@ async function* handleTextOnlyStreaming(
 		headers.Authorization = `Bearer ${accessToken}`;
 	}
 
+	// Structure the message history for the orchestrator
+	const structuredMessages = messages.map((msg) => ({
+		role: msg.from,
+		content: msg.content,
+	}));
+
 	const r = await fetch(`${url}/stream`, {
 		method: "POST",
 		headers,
 		body: JSON.stringify({
-			input: { [inputKey]: prompt },
+			input: {
+				[inputKey]: prompt, // Full rendered prompt (for backward compatibility or direct use)
+				messages: structuredMessages, // Structured conversation history
+				preprompt, // System preprompt if any
+			},
 		}),
 	});
 
@@ -227,14 +250,6 @@ async function* handleStreamingResponse(
 
 				try {
 					const data = JSON.parse(jsonString);
-
-					// Debug: Log the structure of the data package
-					// console.log('=== STREAMING DATA DEBUG ===');
-					// console.log('Data package:', JSON.stringify(data, null, 2));
-					// console.log('Data keys:', Object.keys(data));
-					// console.log('webSources in data:', data.webSources);
-					// console.log('sources in data:', data.sources);
-					// console.log('=== END STREAMING DATA DEBUG ===');
 
 					// Extract webSources if present - accumulate instead of overwrite
 					if (data.webSources && Array.isArray(data.webSources)) {
