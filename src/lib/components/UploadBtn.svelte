@@ -55,11 +55,14 @@
 <script lang="ts">
 	import CarbonUpload from "~icons/carbon/upload";
 	import type { Model } from "$lib/types/Model";
+	import { createEventDispatcher } from "svelte";
 
 	export let classNames = "";
 	export let files: File[];
 	export let mimeTypes: string[];
 	export let currentModel: Model;
+
+	const dispatch = createEventDispatcher<{ filesUploaded: void }>();
 
 	/**
 	 * Due to a bug with Svelte, we cannot use bind:files with multiple
@@ -69,6 +72,11 @@
 		if (!e.target) return;
 		const target = e.target as HTMLInputElement;
 		files = [...files, ...(target.files ?? [])];
+		
+		// Dispatch event when files are uploaded
+		if (target.files && target.files.length > 0) {
+			dispatch("filesUploaded");
+		}
 	};
 
 	// Convert model's multimodalAcceptedMimetypes to user-friendly file type names

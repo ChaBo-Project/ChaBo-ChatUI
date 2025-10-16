@@ -407,7 +407,20 @@
 					<div class="ml-auto gap-2">
 						{#if isFileUploadEnabled}
 							<!-- <UploadBtn bind:files mimeTypes={activeMimeTypes} classNames="ml-auto" /> -->
-							<UploadBtn bind:files mimeTypes={activeMimeTypes} currentModel={currentModel} classNames="ml-auto" />
+							<UploadBtn 
+								bind:files 
+								mimeTypes={activeMimeTypes} 
+								currentModel={currentModel} 
+								classNames="ml-auto"
+								on:filesUploaded={() => {
+									// Auto-submit when files are uploaded
+									if (!loading) {
+										// Use a default message if user hasn't typed anything
+										dispatch("message", message || "Please analyze this file.");
+										message = "";
+									}
+								}}
+							/>
 						{/if}
 						{#if messages && lastMessage && lastMessage.interrupted && !isReadOnly}
 							<ContinueBtn
