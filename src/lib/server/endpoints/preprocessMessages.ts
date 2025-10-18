@@ -48,12 +48,22 @@ Answer the question: ${lastQuestion}`,
 }
 
 async function downloadFiles(messages: Message[], convId: ObjectId): Promise<EndpointMessage[]> {
+	// Find the index of the last user message with files
+	const lastUserMessageIndex = messages.findLastIndex(
+		(msg) => msg.from === "user" && msg.files && msg.files.length > 0
+	);
+
 	return Promise.all(
-		messages.map<Promise<EndpointMessage>>((message) =>
-			Promise.all((message.files ?? []).map((file) => downloadFile(file.value, convId))).then(
-				(files) => ({ ...message, files })
-			)
-		)
+		messages.map<Promise<EndpointMessage>>((message, index) => {
+			// Only download files for the latest user message with files
+			if (index === lastUserMessageIndex && message.files && message.files.length > 0) {
+				return Promise.all(message.files.map((file) => downloadFile(file.value, convId))).then(
+					(files) => ({ ...message, files })
+				);
+			}
+			// For all other messages, strip the files to avoid re-sending them
+			return Promise.resolve({ ...message, files: [] });
+		})
 	);
 }
 

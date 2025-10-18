@@ -14,6 +14,7 @@ import {
 	type MessageUpdate,
 } from "$lib/types/MessageUpdate";
 import { uploadFile } from "$lib/server/files/uploadFile";
+import { cleanupFilesAfterSending } from "$lib/server/files/cleanupFiles";
 import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
 import { isMessageId } from "$lib/utils/tree/isMessageId";
 import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
@@ -201,8 +202,8 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		inputFiles
 			?.filter((file) => file.type !== "hash")
 			.map((file) => {
-				const blob = Buffer.from(file.value, "base64");
-				return new File([blob], file.name, { type: file.mime });
+				const buffer = Buffer.from(file.value, "base64");
+				return new File([buffer as unknown as BlobPart], file.name, { type: file.mime });
 			}) ?? [];
 
 	// check sizes
@@ -455,6 +456,15 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				{ _id: convId },
 				{ $set: { messages: conv.messages, title: conv?.title, updatedAt: new Date() } }
 			);
+
+			// Clean up files after successful generation to prevent re-sending on subsequent turns
+			if (!hasError) {
+				try {
+					await cleanupFilesAfterSending(conv);
+				} catch (e) {
+					logger.error(e, "Failed to cleanup files after sending");
+				}
+			}
 
 			// used to detect if cancel() is called bc of interrupt or just because the connection closes
 			doneStreaming = true;
