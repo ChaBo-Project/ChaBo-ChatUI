@@ -96,6 +96,16 @@ async function* handleStreamingFileUpload(
 		...(msg.files && msg.files.length > 0 && { has_files: true }),
 	}));
 
+	logger.info(
+		`[Langserve Streaming] Preparing file upload request to ${streamingFileUploadUrl}/stream`
+	);
+	logger.info(`[Langserve Streaming] Message count: ${messages.length}`);
+	logger.info(
+		`[Langserve Streaming] Structured messages:`,
+		JSON.stringify(structuredMessages, null, 2)
+	);
+	logger.info(`[Langserve Streaming] Valid files count: ${validFiles.length}`);
+
 	// Use JSON payload for streaming endpoint
 	const payload = {
 		input: {
@@ -106,6 +116,8 @@ async function* handleStreamingFileUpload(
 		},
 	};
 
+	logger.info(`[Langserve Streaming] Full payload:`, JSON.stringify(payload, null, 2));
+
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 		Accept: "text/event-stream",
@@ -115,15 +127,20 @@ async function* handleStreamingFileUpload(
 		headers.Authorization = `Bearer ${accessToken}`;
 	}
 
+	logger.info(`[Langserve Streaming] Request headers:`, JSON.stringify(headers, null, 2));
+
 	const r = await fetch(`${streamingFileUploadUrl}/stream`, {
 		method: "POST",
 		headers,
 		body: JSON.stringify(payload),
 	});
 
+	logger.info(`[Langserve Streaming] Response status: ${r.status} ${r.statusText}`);
+
 	if (!r.ok) {
 		const errorText = await r.text();
-		logger.error(`Streaming file upload failed: ${r.status} ${r.statusText} - ${errorText}`);
+		logger.error(`[Langserve Streaming] Request failed with status ${r.status} ${r.statusText}`);
+		logger.error(`[Langserve Streaming] Error response body: ${errorText}`);
 		throw new Error(`Failed to generate text: ${errorText}`);
 	}
 
@@ -154,20 +171,37 @@ async function* handleTextOnlyStreaming(
 		content: msg.content,
 	}));
 
+	logger.info(`[Langserve Streaming] Preparing text-only request to ${url}/stream`);
+	logger.info(`[Langserve Streaming] Message count: ${messages.length}`);
+	logger.info(
+		`[Langserve Streaming] Structured messages:`,
+		JSON.stringify(structuredMessages, null, 2)
+	);
+
+	const payload = {
+		input: {
+			[inputKey]: prompt, // Full rendered prompt (for backward compatibility or direct use)
+			messages: structuredMessages, // Structured conversation history
+			preprompt, // System preprompt if any
+		},
+	};
+
+	logger.info(`[Langserve Streaming] Full payload:`, JSON.stringify(payload, null, 2));
+	logger.info(`[Langserve Streaming] Request headers:`, JSON.stringify(headers, null, 2));
+
 	const r = await fetch(`${url}/stream`, {
 		method: "POST",
 		headers,
-		body: JSON.stringify({
-			input: {
-				[inputKey]: prompt, // Full rendered prompt (for backward compatibility or direct use)
-				messages: structuredMessages, // Structured conversation history
-				preprompt, // System preprompt if any
-			},
-		}),
+		body: JSON.stringify(payload),
 	});
 
+	logger.info(`[Langserve Streaming] Response status: ${r.status} ${r.statusText}`);
+
 	if (!r.ok) {
-		throw new Error(`Failed to generate text: ${await r.text()}`);
+		const errorText = await r.text();
+		logger.error(`[Langserve Streaming] Request failed with status ${r.status} ${r.statusText}`);
+		logger.error(`[Langserve Streaming] Error response body: ${errorText}`);
+		throw new Error(`Failed to generate text: ${errorText}`);
 	}
 
 	return yield* handleStreamingResponse(r);
@@ -273,7 +307,7 @@ async function* handleStreamingResponse(
 						console.log("Parsing sources from markdown text");
 						console.log("Full text to parse:", data);
 
-						const sourceRegex = /\[([^\]]+)\]\(doc:\/\/([^)]+)\)/g;
+						const sourceRegex = /\[([^\]]+)\]\(((?:doc|https?):\/\/[^)]+)\)/g;
 						let match;
 						let matchCount = 0;
 
@@ -281,7 +315,7 @@ async function* handleStreamingResponse(
 							matchCount++;
 							console.log(`Match ${matchCount}:`, match[1], "->", match[2]);
 							const title = match[1];
-							const uri = `doc://${match[2]}`;
+							const uri = match[2];
 
 							// Add source without originalNumber since it's not in the type definition
 							webSources.push({ uri, title });

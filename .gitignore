@@ -12,5 +12,6 @@ SECRET_CONFIG
 !.env.ci
 *.env
 gcp-*.json
+dot_env_local.json
 
 chat-ui_modifications/

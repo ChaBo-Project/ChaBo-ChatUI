@@ -446,19 +446,40 @@
 						{#each messageFinalAnswer.webSources as { uri, title }, index}
 							{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
 							{@const uniqueCitations = [...new Set(allCitations.map(match => parseInt(match.slice(1, -1))))].sort((a, b) => a - b)}
-							<div
-								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
-							>
-								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
-									[{uniqueCitations[index] || index + 1}]
-								</span>
-								<img
-									class="h-3.5 w-3.5 rounded"
-									src="/favicon.ico"
-									alt="Document icon"
-								/>
-								<div>{title}</div>
-							</div>
+							{@const isHttpSource =
+								uri?.startsWith("http://") || uri?.startsWith("https://")}
+							{#if isHttpSource}
+								<a
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+									href={uri}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+										[{uniqueCitations[index] || index + 1}]
+									</span>
+									<img
+										class="h-3.5 w-3.5 rounded"
+										src="/favicon.ico"
+										alt="Document icon"
+									/>
+									<div>{title ?? uri}</div>
+								</a>
+							{:else}
+								<div
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
+								>
+									<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+										[{uniqueCitations[index] || index + 1}]
+									</span>
+									<img
+										class="h-3.5 w-3.5 rounded"
+										src="/favicon.ico"
+										alt="Document icon"
+									/>
+									<div>{title ?? uri}</div>
+								</div>
+							{/if}
 						{/each}
 					</div>
 				</div>
