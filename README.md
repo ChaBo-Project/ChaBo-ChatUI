@@ -1,21 +1,238 @@
-# Chat UI
+# Chat UI - ChaBo Integration
 
-**Find the docs at [hf.co/docs/chat-ui](https://huggingface.co/docs/chat-ui/index).**
+**This is a modified version of [HuggingFace Chat UI](https://github.com/huggingface/chat-ui) integrated with the ChaBo RAG framework.**
 
 ![Chat UI repository thumbnail](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/chatui-websearch.png)
 
-A chat interface using open source models, eg OpenAssistant or Llama. It is a SvelteKit app and it powers the [HuggingChat app on hf.co/chat](https://huggingface.co/chat).
+A chat interface designed to work with **ChaBo**, a RAG (Retrieval-Augmented Generation) orchestrator built with FastAPI, LangChain, and LangGraph. ChaBo orchestrates embedding, vector search (Qdrant), reranking, and LLM generation to answer queries using retrieved context.
 
-0. [Quickstart](#quickstart)
-1. [No Setup Deploy](#no-setup-deploy)
-2. [Setup](#setup)
-3. [Launch](#launch)
-4. [Web Search](#web-search)
-5. [Text Embedding Models](#text-embedding-models)
-6. [Extra parameters](#extra-parameters)
-7. [Common issues](#common-issues)
-8. [Deploying to a HF Space](#deploying-to-a-hf-space)
-9. [Building](#building)
+This modified version includes:
+- **File Upload Support**: GeoJSON and other multimodal file types with auto-submission
+- **RAG Integration**: Direct connection to ChaBo's LangServe streaming endpoints
+- **Model Instructions**: Display custom instructions per model configuration
+- **Source Citations**: Render and display sources from RAG responses as hyperlinks
+- **Streamlined UI**: Simplified interface focused on RAG workflow
+- **File Lifecycle Management**: Automatic cleanup of uploaded files after processing
+
+For the original Chat UI documentation, see [hf.co/docs/chat-ui](https://huggingface.co/docs/chat-ui/index).
+
+## Table of Contents
+
+0. [ChaBo Integration Setup](#chabo-integration-setup) ⭐ **Start Here for ChaBo**
+1. [Key Modifications](#key-modifications)
+2. [Quickstart (Standard)](#quickstart)
+3. [No Setup Deploy](#no-setup-deploy)
+4. [Setup](#setup)
+5. [Launch](#launch)
+6. [Web Search](#web-search)
+7. [Text Embedding Models](#text-embedding-models)
+8. [Extra parameters](#extra-parameters)
+9. [Common issues](#common-issues)
+10. [Deploying to a HF Space](#deploying-to-a-hf-space)
+11. [Building](#building)
+
+---
+
+## ChaBo Integration Setup
+
+This section explains how to configure Chat UI to work with ChaBo, a RAG (Retrieval-Augmented Generation) orchestrator.
+
+### What is ChaBo?
+
+ChaBo is a FastAPI-based RAG orchestrator that handles:
+- **Embedding**: Convert queries and documents into vectors using HuggingFace endpoints
+- **Vector Search**: Retrieve relevant documents from Qdrant vector database
+- **Reranking**: Improve relevance of retrieved documents using HuggingFace rerankers
+- **Generation**: Generate responses using multiple LLM providers (HuggingFace, OpenAI, Anthropic, Cohere)
+
+**Pipeline Flow:** Query → Embed → Search → Rerank → Generate (with citations)
+
+### Prerequisites
+
+1. **ChaBo Backend**: A running ChaBo instance (see [ChaBo README](https://github.com/your-org/chabo) for setup)
+2. **MongoDB**: For storing chat history
+3. **HF Token** (optional): Required if your ChaBo instance is a private Hugging Face Space
+
+### Configuration for ChaBo
+
+Create a `.env.local` file with the following configuration:
+
+```bash
+# Required: MongoDB for chat history
+MONGODB_URL=mongodb://localhost:27017
+
+# Required: ChaBo model configuration
+MODELS=`[
+  {
+    "name": "chabo-rag-assistant",
+    "displayName": "ChaBo RAG Assistant",
+    "description": "Retrieval-augmented generation powered by ChaBo.",
+    "instructions": {
+      "title": "How to Use",
+      "content": "Upload files or ask questions. The system will search relevant documents and provide cited answers.\n\n**Tip:** Upload GeoJSON files for spatial analysis or text files for document-based queries."
+    },
+    "multimodal": true,
+    "multimodalAcceptedMimetypes": [
+      "application/geojson",
+      "text/plain"
+    ],
+    "chatPromptTemplate": "{{#each messages}}{{#ifUser}}{{content}}{{/ifUser}}{{#ifAssistant}}{{content}}{{/ifAssistant}}{{/each}}",
+    "parameters": {
+      "temperature": 0.0,
+      "max_new_tokens": 2048
+    },
+    "endpoints": [{
+      "type": "langserve-streaming",
+      "url": "http://chabo:7860/chatfed-ui-stream",
+      "streamingFileUploadUrl": "http://chabo:7860/chatfed-with-file-stream",
+      "inputKey": "text",
+      "fileInputKey": "files"
+    }]
+  }
+]`
+
+# Optional: HF token for private ChaBo spaces
+HF_TOKEN=hf_your_token_here
+
+# Optional: Disable LLM-based title generation (recommended for ChaBo)
+LLM_SUMMARIZATION=false
+
+# Optional: Disable assistants feature
+ENABLE_ASSISTANTS=false
+ENABLE_ASSISTANTS_RAG=false
+COMMUNITY_TOOLS=false
+
+# Optional: Customize app appearance
+PUBLIC_APP_NAME="ChaBo Assistant"
+PUBLIC_APP_DESCRIPTION="RAG-powered question answering with cited sources"
+PUBLIC_APP_DISCLAIMER=1
+PUBLIC_APP_DISCLAIMER_MESSAGE="Disclaimer: AI is an area of active research with known problems such as hallucination and misinformation. Use this application with caution."
+
+# Optional: Add announcement banner
+PUBLIC_ANNOUNCEMENT_BANNERS=`[
+  {
+    "title": "RAG-powered assistant using ChaBo. Learn more: ",
+    "linkTitle": "Documentation",
+    "linkHref": "https://github.com/your-org/chabo"
+  }
+]`
+```
+
+### Key Configuration Fields for ChaBo
+
+#### Model Instructions (`instructions`)
+Display custom usage instructions to users when they start a conversation:
+```json
+"instructions": {
+  "title": "How to Use",
+  "content": "Your instructions here...\n\nSupports line breaks."
+}
+```
+
+#### Multimodal File Upload (`multimodal`, `multimodalAcceptedMimetypes`)
+Enable file uploads with specific MIME types:
+```json
+"multimodal": true,
+"multimodalAcceptedMimetypes": [
+  "application/geojson",
+  "text/plain",
+  "application/pdf"
+]
+```
+
+The upload button will automatically display accepted file types to users.
+
+#### LangServe Streaming Endpoints
+ChaBo uses LangServe for streaming responses:
+```json
+"endpoints": [{
+  "type": "langserve-streaming",
+  "url": "http://chabo:7860/chatfed-ui-stream",           // Text-only queries
+  "streamingFileUploadUrl": "http://chabo:7860/chatfed-with-file-stream",  // Queries with files
+  "inputKey": "text",        // Key for text input
+  "fileInputKey": "files"    // Key for file uploads
+}]
+```
+
+### Authentication for Private ChaBo Spaces
+
+If your ChaBo instance is hosted as a private Hugging Face Space, set the `HF_TOKEN` environment variable:
+
+```bash
+# In .env.local
+HF_TOKEN=hf_your_token_here
+```
+
+Alternatively, you can specify the token in the endpoint configuration:
+```json
+"endpoints": [{
+  "type": "langserve-streaming",
+  "url": "https://your-username-chabo.hf.space/chatfed-ui-stream",
+  "accessToken": "hf_your_token_here"
+}]
+```
+
+### Running Chat UI with ChaBo
+
+1. **Start MongoDB**:
+```bash
+docker run -d -p 27017:27017 --name mongo-chatui mongo:latest
+```
+
+2. **Ensure ChaBo is Running**: Make sure your ChaBo backend is accessible at the URL specified in `endpoints.url`
+
+3. **Install and Launch Chat UI**:
+```bash
+npm install
+npm run dev
+```
+
+4. **Access the UI**: Open http://localhost:5173
+
+### File Upload Workflow
+
+1. User clicks the upload button (shows accepted file types)
+2. User selects a file
+3. File is automatically submitted (no need to type a prompt)
+4. ChaBo processes the file and generates a response with citations
+5. Files are automatically cleaned up after processing
+
+### Source Citations
+
+Responses from ChaBo include source citations that are automatically rendered as:
+- **Clickable hyperlinks** for web sources (HTTP/HTTPS URLs)
+- **Citation numbers** matching inline references in the response text
+- **Source metadata** (title, page numbers, etc.)
+
+---
+
+## Key Modifications
+
+This fork includes the following enhancements for ChaBo integration:
+
+### File Upload & Handling
+- **GeoJSON Support**: Preserve MIME types for GeoJSON and other specialized formats
+- **Auto-Submit on Upload**: Files automatically trigger query submission
+- **File Lifecycle Management**: Uploaded files are cleaned from GridFS after processing to save storage
+- **Original Filename Preservation**: Maintain file extensions throughout upload/download cycle
+
+### UI Enhancements
+- **Model Instructions Display**: Show custom instructions per model configuration
+- **Upload Button with File Types**: Display accepted MIME types directly in the upload button
+- **Source Citations**: Render RAG response sources as clickable hyperlinks
+- **Loading Indicators**: Show "Thinking about your query..." while waiting for response
+- **Simplified UI**: Removed unnecessary settings and menu items for focused RAG workflow
+
+### Model Configuration
+- **Dynamic Upload Schema**: Upload button updates automatically when switching models
+- **Model-Specific Instructions**: Configure unique instructions for each model/assistant
+- **LangServe Streaming**: Native support for LangChain/LangServe endpoints with file uploads
+
+### Authentication
+- **HF Token Support**: Authenticate to private Hugging Face Spaces hosting ChaBo
+- **Header-Based Auth**: Include `Authorization: Bearer` headers for private endpoints
+
+---
 
 ## Quickstart
 
