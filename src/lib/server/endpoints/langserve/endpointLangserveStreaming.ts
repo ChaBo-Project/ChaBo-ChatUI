@@ -96,16 +96,6 @@ async function* handleStreamingFileUpload(
 		...(msg.files && msg.files.length > 0 && { has_files: true }),
 	}));
 
-	logger.info(
-		`[Langserve Streaming] Preparing file upload request to ${streamingFileUploadUrl}/stream`
-	);
-	logger.info(`[Langserve Streaming] Message count: ${messages.length}`);
-	logger.info(
-		`[Langserve Streaming] Structured messages:`,
-		JSON.stringify(structuredMessages, null, 2)
-	);
-	logger.info(`[Langserve Streaming] Valid files count: ${validFiles.length}`);
-
 	// Use JSON payload for streaming endpoint
 	const payload = {
 		input: {
@@ -116,8 +106,6 @@ async function* handleStreamingFileUpload(
 		},
 	};
 
-	logger.info(`[Langserve Streaming] Full payload:`, JSON.stringify(payload, null, 2));
-
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 		Accept: "text/event-stream",
@@ -127,15 +115,11 @@ async function* handleStreamingFileUpload(
 		headers.Authorization = `Bearer ${accessToken}`;
 	}
 
-	logger.info(`[Langserve Streaming] Request headers:`, JSON.stringify(headers, null, 2));
-
 	const r = await fetch(`${streamingFileUploadUrl}/stream`, {
 		method: "POST",
 		headers,
 		body: JSON.stringify(payload),
 	});
-
-	logger.info(`[Langserve Streaming] Response status: ${r.status} ${r.statusText}`);
 
 	if (!r.ok) {
 		const errorText = await r.text();
@@ -171,13 +155,6 @@ async function* handleTextOnlyStreaming(
 		content: msg.content,
 	}));
 
-	logger.info(`[Langserve Streaming] Preparing text-only request to ${url}/stream`);
-	logger.info(`[Langserve Streaming] Message count: ${messages.length}`);
-	logger.info(
-		`[Langserve Streaming] Structured messages:`,
-		JSON.stringify(structuredMessages, null, 2)
-	);
-
 	const payload = {
 		input: {
 			[inputKey]: prompt, // Full rendered prompt (for backward compatibility or direct use)
@@ -186,16 +163,11 @@ async function* handleTextOnlyStreaming(
 		},
 	};
 
-	logger.info(`[Langserve Streaming] Full payload:`, JSON.stringify(payload, null, 2));
-	logger.info(`[Langserve Streaming] Request headers:`, JSON.stringify(headers, null, 2));
-
 	const r = await fetch(`${url}/stream`, {
 		method: "POST",
 		headers,
 		body: JSON.stringify(payload),
 	});
-
-	logger.info(`[Langserve Streaming] Response status: ${r.status} ${r.statusText}`);
 
 	if (!r.ok) {
 		const errorText = await r.text();

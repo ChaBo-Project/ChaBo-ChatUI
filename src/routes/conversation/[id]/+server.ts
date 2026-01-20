@@ -31,6 +31,9 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	const convId = new ObjectId(id);
 	const promptedAt = new Date();
 
+	console.log("\n========== POST REQUEST STARTED ==========");
+	console.log(`Conversation ID: ${convId.toString()}`);
+
 	const userId = locals.user?._id ?? locals.sessionId;
 
 	// check user
@@ -39,12 +42,17 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	}
 
 	// check if the user has access to the conversation
+	console.log("Loading conversation for pre-check...");
 	const convBeforeCheck = await collections.conversations.findOne({
 		_id: convId,
 		...authCondition(locals),
 	});
 
+	console.log(`convBeforeCheck found: ${!!convBeforeCheck}`);
+	console.log(`Has rootMessageId: ${!!convBeforeCheck?.rootMessageId}`);
+
 	if (convBeforeCheck && !convBeforeCheck.rootMessageId) {
+		console.log("⚠️  Converting legacy conversation...");
 		const res = await collections.conversations.updateOne(
 			{
 				_id: convId,
@@ -57,17 +65,28 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			}
 		);
 
+		console.log(`Conversion result - acknowledged: ${res.acknowledged}`);
+
 		if (!res.acknowledged) {
+			console.error("❌ Failed to convert conversation");
 			error(500, "Failed to convert conversation");
 		}
 	}
 
+	console.log("Loading conversation...");
 	const conv = await collections.conversations.findOne({
 		_id: convId,
 		...authCondition(locals),
 	});
 
+	console.log(`conv found: ${!!conv}`);
+	if (conv) {
+		console.log(`conv.messages.length: ${conv.messages.length}`);
+		console.log(`conv.rootMessageId: ${conv.rootMessageId}`);
+	}
+
 	if (!conv) {
+		console.error("❌ Conversation not found");
 		error(404, "Conversation not found");
 	}
 
@@ -126,21 +145,29 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	}
 
 	// fetch the model
+	console.log("Fetching model...");
 	const model = models.find((m) => m.id === conv.model);
 
 	if (!model) {
+		console.error("❌ Model not available anymore");
 		error(410, "Model not available anymore");
 	}
+	console.log(`✓ Model found: ${model.id}`);
 
 	// finally parse the content of the request
+	console.log("Parsing form data...");
 	const form = await request.formData();
+	console.log("✓ Form data parsed");
 
 	const json = form.get("data");
+	console.log(`JSON data present: ${!!json}, type: ${typeof json}`);
 
 	if (!json || typeof json !== "string") {
+		console.error("❌ Invalid request - no JSON data");
 		error(400, "Invalid request");
 	}
 
+	console.log("Parsing request JSON with zod...");
 	const {
 		inputs: newPrompt,
 		id: messageId,
@@ -173,6 +200,10 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			),
 		})
 		.parse(JSON.parse(json));
+
+	console.log(
+		`✓ Request parsed - messageId: ${messageId}, isRetry: ${isRetry}, isContinue: ${isContinue}`
+	);
 
 	const inputFiles = await Promise.all(
 		form
@@ -306,11 +337,24 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		messagesForPrompt = buildSubtree(conv, newUserMessageId);
 	}
 
+	console.log("\n========== MESSAGE PREPARATION DEBUG ==========");
+	console.log(`messageToWriteToId: ${messageToWriteToId}`);
+	console.log(`conv.messages.length: ${conv.messages.length}`);
+	console.log(`messagesForPrompt.length: ${messagesForPrompt.length}`);
+	console.log(
+		`conv.messages IDs:`,
+		conv.messages.map((m) => m.id)
+	);
+
 	const messageToWriteTo = conv.messages.find((message) => message.id === messageToWriteToId);
+	console.log(`messageToWriteTo found: ${!!messageToWriteTo}`);
+
 	if (!messageToWriteTo) {
+		console.error("❌ FAILED TO CREATE MESSAGE - messageToWriteToId not found in conversation");
 		error(500, "Failed to create message");
 	}
 	if (messagesForPrompt.length === 0) {
+		console.error("❌ FAILED TO CREATE PROMPT - messagesForPrompt is empty");
 		error(500, "Failed to create prompt");
 	}
 
@@ -452,16 +496,28 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				}
 			}
 
+			console.log("\n========== SAVING CONVERSATION STATE ==========");
+			console.log(`conv.messages.length: ${conv.messages.length}`);
+			console.log(
+				`Messages structure:`,
+				conv.messages.map((m) => ({ id: m.id, from: m.from, hasFiles: !!m.files?.length }))
+			);
+
 			await collections.conversations.updateOne(
 				{ _id: convId },
 				{ $set: { messages: conv.messages, title: conv?.title, updatedAt: new Date() } }
 			);
 
+			console.log("✓ Conversation saved");
+
 			// Clean up files after successful generation to prevent re-sending on subsequent turns
 			if (!hasError) {
 				try {
+					console.log("\n========== STARTING FILE CLEANUP ==========");
 					await cleanupFilesAfterSending(conv);
+					console.log("✓ File cleanup completed");
 				} catch (e) {
+					console.error("❌ File cleanup failed:", e);
 					logger.error(e, "Failed to cleanup files after sending");
 				}
 			}
