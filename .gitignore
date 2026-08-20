@@ -15,3 +15,6 @@ gcp-*.json
 dot_env_local.json
 
 chat-ui_modifications/
+
+NOTES.md
+CLAUDE.md
