@@ -1,0 +1,49 @@
+name: "\u2728 Feature request"
+description: Propose a new capability or behaviour change.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Describe the outcome you want, not how to build it.
+        Implementation is a design conversation for the PR, not a precondition
+        for opening this.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What outcome do you want?
+      description: >-
+        What should be true after this ships, from a user's or operator's
+        point of view — not how it gets built.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does this matter?
+      description: What's the problem today, or what does this unlock?
+    validations:
+      required: true
+  - type: dropdown
+    id: repo
+    attributes:
+      label: Which repository is this most likely to affect?
+      options:
+        - ChaBo-Orchestrator
+        - ChaBo-Channels
+        - ChaBo-ChatUI
+        - ChaBo-Deploy
+        - ChaBo-Project.github.io
+        - Not sure yet
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation notes (optional)
+      description: >-
+        Only if you already have thoughts — the outcome above matters more
+        than this does.
+    validations:
+      required: false

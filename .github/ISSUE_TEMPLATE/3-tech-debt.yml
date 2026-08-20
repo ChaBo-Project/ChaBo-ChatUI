@@ -1,0 +1,42 @@
+name: "\U0001F9F9 Tech debt"
+description: >-
+  Something works, but isn't right — recorded per A6, not left in a local
+  file or note.
+title: "[Tech debt]: "
+labels: ["tech-debt"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: What's the current state?
+      description: What exists today and works, but shouldn't stay this way.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: What's the impact of leaving this?
+      description: >-
+        Confusion, risk, maintenance burden, blocked future work — be
+        concrete, not just "it's messy."
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: What would resolving it involve, roughly?
+    validations:
+      required: false
+  - type: dropdown
+    id: repo
+    attributes:
+      label: Which repository does this belong to?
+      options:
+        - ChaBo-Orchestrator
+        - ChaBo-Channels
+        - ChaBo-ChatUI
+        - ChaBo-Deploy
+        - ChaBo-Project.github.io
+        - Cross-cutting — not one repo's alone (e.g. auth between services)
+    validations:
+      required: true
