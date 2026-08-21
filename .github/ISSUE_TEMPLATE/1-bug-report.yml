@@ -1,0 +1,62 @@
+name: "\U0001F41E Bug report"
+description: Something isn't working the way this repo says it should.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check open and recently closed issues first. If this concerns a live
+        deployment, check `list-instances.sh` output for that instance before assuming
+        it's a code bug rather than version drift.
+  - type: dropdown
+    id: repo
+    attributes:
+      label: Which repository does this affect?
+      options:
+        - ChaBo-Orchestrator
+        - ChaBo-Channels
+        - ChaBo-ChatUI
+        - ChaBo-Deploy
+        - ChaBo-Project.github.io
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / image tag
+      description: >-
+        The SemVer tag this was running on, if known — never ":latest" (A4).
+      placeholder: v1.4.0
+  - type: input
+    id: instance
+    attributes:
+      label: Instance
+      description: e.g. chabo-morshedzaki. Leave blank if this is local/dev only.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or output
+      description: Paste directly — renders as a code block automatically.
+      render: shell
+    validations:
+      required: false

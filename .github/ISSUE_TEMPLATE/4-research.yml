@@ -1,0 +1,32 @@
+name: "\U0001F50D Research"
+description: >-
+  A question that needs investigating before implementation can be scoped —
+  kept separate from implementation.
+title: "[Research]: "
+labels: ["research"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: What question needs answering?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: What does "done" look like for this research?
+      description: >-
+        A decision, a written comparison, a recommendation — research ends in
+        an answer, not shipped code.
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Timebox
+      description: >-
+        How much time is reasonable to spend before reporting back, even if
+        inconclusive?
+      placeholder: e.g. 2 days
+    validations:
+      required: false
