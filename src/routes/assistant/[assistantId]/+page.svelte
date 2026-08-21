@@ -8,7 +8,6 @@
 	import { applyAction, enhance } from "$app/forms";
 	import { env as envPublic } from "$env/dynamic/public";
 	import { page } from "$app/stores";
-	import IconGear from "~icons/bi/gear-fill";
 
 	export let data: PageData;
 

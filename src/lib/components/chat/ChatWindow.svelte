@@ -6,7 +6,6 @@
 	import CarbonExport from "~icons/carbon/export";
 	import CarbonStopFilledAlt from "~icons/carbon/stop-filled-alt";
 	import CarbonCheckmark from "~icons/carbon/checkmark";
-	import CarbonCaretDown from "~icons/carbon/caret-down";
 
 	import EosIconsLoading from "~icons/eos-icons/loading";
 
@@ -237,7 +236,6 @@
 	];
 
 	$: isFileUploadEnabled = activeMimeTypes.length > 0;
-
 </script>
 
 <svelte:window
@@ -407,10 +405,10 @@
 					<div class="ml-auto gap-2">
 						{#if isFileUploadEnabled}
 							<!-- <UploadBtn bind:files mimeTypes={activeMimeTypes} classNames="ml-auto" /> -->
-							<UploadBtn 
-								bind:files 
-								mimeTypes={activeMimeTypes} 
-								currentModel={currentModel} 
+							<UploadBtn
+								bind:files
+								mimeTypes={activeMimeTypes}
+								{currentModel}
 								classNames="ml-auto"
 								on:filesUploaded={() => {
 									// Auto-submit when files are uploaded
@@ -505,10 +503,7 @@
 								class="inline-flex items-center hover:underline"
 								>{currentModel.displayName}<CarbonCaretDown class="text-xxs" /></a
 							> -->
-							<span
-								class="inline-flex items-center"
-								>{currentModel.displayName}</span
-							>
+							<span class="inline-flex items-center">{currentModel.displayName}</span>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
 								{currentModel.id}
@@ -522,10 +517,9 @@
 								class="inline-flex items-center border-b hover:text-gray-600 dark:border-gray-700 dark:hover:text-gray-300"
 								>{model?.displayName}<CarbonCaretDown class="text-xxs" /></a
 							> -->
-							<span
-							class="inline-flex items-center border-b dark:border-gray-700"
-							>{model?.displayName}</span
-						>
+							<span class="inline-flex items-center border-b dark:border-gray-700"
+								>{model?.displayName}</span
+							>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
 								{currentModel.id}

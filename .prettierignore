@@ -14,3 +14,7 @@ package-lock.json
 yarn.lock
 
 chat-ui_modifications/
+
+# local, untracked working files
+.claude/
+dot_env_local.json

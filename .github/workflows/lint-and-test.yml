@@ -19,7 +19,7 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: |
-          npm install ci
+          npm ci
       - name: "Checking lint/format errors"
         run: |
           npm run lint
@@ -30,6 +30,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    services:
+      mongodb:
+        image: mongo:6.0.5
+        ports:
+          - 27017:27017
 
     steps:
       - uses: actions/checkout@v3
@@ -44,8 +50,7 @@ jobs:
           npm run test
 
   build-check:
-    runs-on:
-      group: aws-general-8-plus
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
@@ -53,7 +58,6 @@ jobs:
         run: |
           docker build \
             --build-arg INCLUDE_DB=true \
-            --build-arg SKIP_LLAMA_CPP_BUILD=true \
             -t chat-ui-test:latest .
 
       - name: Run Docker container

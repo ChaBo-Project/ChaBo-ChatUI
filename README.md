@@ -7,6 +7,7 @@
 A chat interface designed to work with **ChaBo**, a RAG (Retrieval-Augmented Generation) orchestrator built with FastAPI, LangChain, and LangGraph. ChaBo orchestrates embedding, vector search (Qdrant), reranking, and LLM generation to answer queries using retrieved context.
 
 This modified version includes:
+
 - **File Upload Support**: GeoJSON and other multimodal file types with auto-submission
 - **RAG Integration**: Direct connection to ChaBo's LangServe streaming endpoints
 - **Model Instructions**: Display custom instructions per model configuration
@@ -40,6 +41,7 @@ This section explains how to configure Chat UI to work with ChaBo, a RAG (Retrie
 ### What is ChaBo?
 
 ChaBo is a FastAPI-based RAG orchestrator that handles:
+
 - **Embedding**: Convert queries and documents into vectors using HuggingFace endpoints
 - **Vector Search**: Retrieve relevant documents from Qdrant vector database
 - **Reranking**: Improve relevance of retrieved documents using HuggingFace rerankers
@@ -121,7 +123,9 @@ PUBLIC_ANNOUNCEMENT_BANNERS=`[
 ### Key Configuration Fields for ChaBo
 
 #### Model Instructions (`instructions`)
+
 Display custom usage instructions to users when they start a conversation:
+
 ```json
 "instructions": {
   "title": "How to Use",
@@ -130,7 +134,9 @@ Display custom usage instructions to users when they start a conversation:
 ```
 
 #### Multimodal File Upload (`multimodal`, `multimodalAcceptedMimetypes`)
+
 Enable file uploads with specific MIME types:
+
 ```json
 "multimodal": true,
 "multimodalAcceptedMimetypes": [
@@ -143,7 +149,9 @@ Enable file uploads with specific MIME types:
 The upload button will automatically display accepted file types to users.
 
 #### LangServe Streaming Endpoints
+
 ChaBo uses LangServe for streaming responses:
+
 ```json
 "endpoints": [{
   "type": "langserve-streaming",
@@ -164,6 +172,7 @@ HF_TOKEN=hf_your_token_here
 ```
 
 Alternatively, you can specify the token in the endpoint configuration:
+
 ```json
 "endpoints": [{
   "type": "langserve-streaming",
@@ -175,6 +184,7 @@ Alternatively, you can specify the token in the endpoint configuration:
 ### Running Chat UI with ChaBo
 
 1. **Start MongoDB**:
+
 ```bash
 docker run -d -p 27017:27017 --name mongo-chatui mongo:latest
 ```
@@ -182,6 +192,7 @@ docker run -d -p 27017:27017 --name mongo-chatui mongo:latest
 2. **Ensure ChaBo is Running**: Make sure your ChaBo backend is accessible at the URL specified in `endpoints.url`
 
 3. **Install and Launch Chat UI**:
+
 ```bash
 npm install
 npm run dev
@@ -200,6 +211,7 @@ npm run dev
 ### Source Citations
 
 Responses from ChaBo include source citations that are automatically rendered as:
+
 - **Clickable hyperlinks** for web sources (HTTP/HTTPS URLs)
 - **Citation numbers** matching inline references in the response text
 - **Source metadata** (title, page numbers, etc.)
@@ -211,12 +223,14 @@ Responses from ChaBo include source citations that are automatically rendered as
 This fork includes the following enhancements for ChaBo integration:
 
 ### File Upload & Handling
+
 - **GeoJSON Support**: Preserve MIME types for GeoJSON and other specialized formats
 - **Auto-Submit on Upload**: Files automatically trigger query submission
 - **File Lifecycle Management**: Uploaded files are cleaned from GridFS after processing to save storage
 - **Original Filename Preservation**: Maintain file extensions throughout upload/download cycle
 
 ### UI Enhancements
+
 - **Model Instructions Display**: Show custom instructions per model configuration
 - **Upload Button with File Types**: Display accepted MIME types directly in the upload button
 - **Source Citations**: Render RAG response sources as clickable hyperlinks
@@ -224,11 +238,13 @@ This fork includes the following enhancements for ChaBo integration:
 - **Simplified UI**: Removed unnecessary settings and menu items for focused RAG workflow
 
 ### Model Configuration
+
 - **Dynamic Upload Schema**: Upload button updates automatically when switching models
 - **Model-Specific Instructions**: Configure unique instructions for each model/assistant
 - **LangServe Streaming**: Native support for LangChain/LangServe endpoints with file uploads
 
 ### Authentication
+
 - **HF Token Support**: Authenticate to private Hugging Face Spaces hosting ChaBo
 - **Header-Based Auth**: Include `Authorization: Bearer` headers for private endpoints
 
