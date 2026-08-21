@@ -5,22 +5,57 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<meta name="theme-color" content="rgb(249, 250, 251)" />
 		<script>
-			if (
-				localStorage.theme === "dark" ||
-				(!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
-			) {
-				document.documentElement.classList.add("dark");
-				document
-					.querySelector('meta[name="theme-color"]')
-					.setAttribute("content", "rgb(26, 36, 50)");
-			}
+			// Resolution order: ?__theme= (so an embedder can pin the theme via the iframe src, the
+			// convention HF Spaces uses) > the stored choice > the OS preference.
+			// Every localStorage access is guarded: it throws outright in a cross-site iframe under
+			// Safari and Firefox strict mode, and an unguarded throw here took window.gaId down with it.
+			(function () {
+				var theme = null;
+
+				try {
+					var param = new URLSearchParams(window.location.search).get("__theme");
+					if (param === "light" || param === "dark") {
+						theme = param;
+					}
+				} catch (e) {
+					// no-op
+				}
+
+				if (theme) {
+					try {
+						localStorage.theme = theme;
+					} catch (e) {
+						// storage unavailable — the URL parameter still applies for this page load
+					}
+				} else {
+					try {
+						if (localStorage.theme === "light" || localStorage.theme === "dark") {
+							theme = localStorage.theme;
+						}
+					} catch (e) {
+						// no-op
+					}
+				}
+
+				if (!theme) {
+					theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+				}
+
+				if (theme === "dark") {
+					document.documentElement.classList.add("dark");
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) {
+						meta.setAttribute("content", "rgb(26, 36, 50)");
+					}
+				}
+			})();
 
 			// For some reason, Sveltekit doesn't let us load env variables from .env here, so we load it from hooks.server.ts
 			window.gaId = "%gaId%";
 		</script>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" class="h-full dark:bg-gray-900">
+	<body data-sveltekit-preload-data="hover" class="h-full bg-app-bg">
 		<div id="app" class="contents h-full">%sveltekit.body%</div>
 
 		<!-- Google Tag Manager -->
