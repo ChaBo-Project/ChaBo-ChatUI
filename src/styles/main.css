@@ -4,6 +4,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Surface tokens. Every app-level background goes through these instead of hardcoding
+ * `bg-white` / `dark:bg-gray-900` at each site, so an embedder can recolour the app to match the
+ * page it is framed in. They are stored as space-separated RGB channels rather than as colours so
+ * that Tailwind's opacity modifiers (`bg-app-bg/80`, `from-app-surface/30`) keep working.
+ *
+ * Runtime overrides come from PUBLIC_APP_BACKGROUND / PUBLIC_APP_SURFACE (and their _DARK
+ * counterparts) — see `src/lib/utils/surfaceOverride.ts`. Values below are the historical defaults.
+ */
+@layer base {
+	:root {
+		--app-bg: 255 255 255; /* white */
+		--app-surface: 249 250 251; /* gray-50 */
+		--app-surface-muted: 243 244 246; /* gray-100 */
+	}
+
+	.dark {
+		--app-bg: 17 24 39; /* gray-900 */
+		--app-surface: 31 41 55; /* gray-800 */
+		--app-surface-muted: 55 65 81; /* gray-700 */
+	}
+}
+
 @layer components {
 	.btn {
 		@apply inline-flex flex-shrink-0 cursor-pointer select-none items-center justify-center whitespace-nowrap outline-none transition-all focus:ring disabled:cursor-default;

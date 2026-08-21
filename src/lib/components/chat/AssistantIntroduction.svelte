@@ -6,7 +6,6 @@
 	import type { Assistant } from "$lib/types/Assistant";
 	import { useSettingsStore } from "$lib/stores/settings";
 	import { formatUserCount } from "$lib/utils/formatUserCount";
-	import IconGear from "~icons/bi/gear-fill";
 	import IconInternet from "../icons/IconInternet.svelte";
 	import CarbonExport from "~icons/carbon/export";
 	import CarbonCheckmark from "~icons/carbon/checkmark";
