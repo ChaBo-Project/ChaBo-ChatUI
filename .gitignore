@@ -18,3 +18,8 @@ chat-ui_modifications/
 
 NOTES.md
 CLAUDE.md
+
+# Local-only scratch space for manual/Docker testing (configs, throwaway
+# scripts, notes) - never committed, whole folder ignored regardless of
+# what gets added under it.
+/local-testing/
