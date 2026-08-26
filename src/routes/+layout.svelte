@@ -164,7 +164,7 @@
 
 <svelte:head>
 	<title>{envPublic.PUBLIC_APP_NAME}</title>
-	<meta name="description" content={envPublic.PUBLIC_APP_DESCRIPTION} />
+	<meta name="description" content={envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"} />
 	<meta name="twitter:card" content="summary_large_image" />
 
 	<!-- Runtime surface colours, so an embed can be recoloured without a rebuild. -->
@@ -183,7 +183,10 @@
 			content="{envPublic.PUBLIC_ORIGIN ||
 				$page.url.origin}{base}/{envPublic.PUBLIC_APP_ASSETS}/icon-512x512.png"
 		/>
-		<meta property="og:description" content={envPublic.PUBLIC_APP_DESCRIPTION} />
+		<meta
+			property="og:description"
+			content={envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"}
+		/>
 	{/if}
 	<link
 		rel="icon"

@@ -22,13 +22,13 @@
 				<Logo classNames="mr-1 flex-none" />
 				{envPublic.PUBLIC_APP_NAME}
 				<div
-					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-gray-50 px-2 text-base text-gray-400 dark:border-gray-700/60 dark:bg-gray-800"
+					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-app-surface px-2 text-base text-gray-400 dark:border-gray-700/60"
 				>
 					v{envPublic.PUBLIC_VERSION}
 				</div>
 			</div>
 			<p class="text-base text-gray-600 dark:text-gray-400">
-				{envPublic.PUBLIC_APP_DESCRIPTION}
+				{envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"}
 			</p>
 		</div>
 	</div>
@@ -128,7 +128,7 @@
 				{#each currentModel.promptExamples as example}
 					<button
 						type="button"
-						class="rounded-xl border bg-gray-50 p-3 text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 max-xl:text-sm xl:p-3.5"
+						class="rounded-xl border bg-app-surface p-3 text-gray-600 hover:bg-app-surface/70 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-app-surface/70 max-xl:text-sm xl:p-3.5"
 						on:click={() => dispatch("message", example.prompt)}
 					>
 						{example.title}

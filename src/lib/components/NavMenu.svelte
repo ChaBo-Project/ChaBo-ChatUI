@@ -57,7 +57,7 @@
 	<a
 		href={`${base}/`}
 		on:click={handleNewChatClick}
-		class="flex rounded-lg border bg-white px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 dark:bg-gray-700 sm:text-smd"
+		class="flex rounded-lg border bg-app-surface px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 sm:text-smd"
 	>
 		New Chat
 	</a>
@@ -98,7 +98,7 @@
 		<form
 			action="{base}/logout"
 			method="post"
-			class="group flex items-center gap-1.5 rounded-lg pl-2.5 pr-2 hover:bg-app-surface-muted"
+			class="group flex items-center gap-1.5 rounded-lg pl-2.5 pr-2 hover:bg-app-surface/70"
 		>
 			<span
 				class="flex h-9 flex-none shrink items-center gap-1.5 truncate pr-2 text-gray-500 dark:text-gray-400"
@@ -118,7 +118,7 @@
 		<form action="{base}/login" method="POST" target="_parent">
 			<button
 				type="submit"
-				class="flex h-9 w-full flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+				class="flex h-9 w-full flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 			>
 				Login
 			</button>
@@ -127,14 +127,14 @@
 	<button
 		on:click={switchTheme}
 		type="button"
-		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
 		Theme
 	</button>
 	{#if nModels > 1}
 		<a
 			href="{base}/models"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			Assistants
 			<span
@@ -146,7 +146,7 @@
 	{#if $page.data.enableAssistants}
 		<a
 			href="{base}/assistants"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			Assistants
 		</a>
@@ -154,7 +154,7 @@
 	{#if $page.data.enableCommunityTools}
 		<a
 			href="{base}/tools"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			Tools
 			<span
@@ -166,14 +166,14 @@
 
 	<!-- <a
 		href="{base}/settings"
-		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
 		Settings
 	</a> -->
 	{#if envPublic.PUBLIC_APP_NAME === "HuggingChat"}
 		<a
 			href="{base}/privacy"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface-muted dark:text-gray-400"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			About & Privacy
 		</a>
