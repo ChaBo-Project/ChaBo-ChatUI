@@ -1,6 +1,6 @@
 image:
-  repository: huggingface
-  name: chat-ui
+  repository: ghcr.io/chabo-project
+  name: chabo-chatui-db
 
 nodeSelector:
   role-hub-utils: "true"

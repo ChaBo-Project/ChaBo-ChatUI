@@ -3,7 +3,7 @@
 # you will also find guides on how best to write your Dockerfile
 ARG INCLUDE_DB=false
 
-FROM node:20 AS builder
+FROM node:22 AS builder
 
 WORKDIR /app
 
@@ -28,10 +28,10 @@ RUN git config --global --add safe.directory /app && \
 FROM mongo:7 AS mongo
 
 # image to be used if INCLUDE_DB is false
-FROM node:20-slim AS local_db_false
+FROM node:22-slim AS local_db_false
 
 # image to be used if INCLUDE_DB is true
-FROM node:20-slim AS local_db_true
+FROM node:22-slim AS local_db_true
 
 RUN apt-get update
 RUN apt-get install gnupg curl -y
