@@ -367,7 +367,7 @@
 					<div class="text-gray-400">Sources:<br /></div>
 					{#each webSearchSources as { link, title }}
 						<a
-							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
 							href={link}
 							target="_blank"
 						>
@@ -447,7 +447,7 @@
 							{@const isHttpSource = uri?.startsWith("http://") || uri?.startsWith("https://")}
 							{#if isHttpSource}
 								<a
-									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
 									href={uri}
 									target="_blank"
 									rel="noopener noreferrer"
@@ -460,7 +460,7 @@
 								</a>
 							{:else}
 								<div
-									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none dark:border-gray-800"
 								>
 									<span class="mr-1 text-xs font-medium text-gray-500 dark:text-gray-400">
 										[{uniqueCitations[index] || index + 1}]
