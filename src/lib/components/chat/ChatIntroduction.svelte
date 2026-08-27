@@ -108,13 +108,11 @@
 
 	{#if currentModel.instructions}
 		<div class="mt-4 lg:col-span-2 lg:pl-24">
-			<div
-				class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/20"
-			>
-				<h3 class="mb-2 font-semibold text-blue-800 dark:text-blue-200">
+			<div class="rounded-lg border border-app-surface bg-app-surface p-4">
+				<h3 class="mb-2 font-semibold text-gray-800 dark:text-gray-200">
 					{currentModel.instructions.title || "Model Instructions"}
 				</h3>
-				<p class="whitespace-pre-line text-sm text-blue-700 dark:text-blue-300">
+				<p class="whitespace-pre-line text-sm text-gray-600 dark:text-gray-300">
 					{currentModel.instructions.content}
 				</p>
 			</div>
