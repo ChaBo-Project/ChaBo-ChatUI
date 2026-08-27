@@ -218,6 +218,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.request.headers.get("accept")?.includes("text/html")
 	) {
 		refreshSessionCookie(event.cookies, secretSessionId);
+
+		// Keep the DB session's `expiresAt` (what the Mongo TTL index actually deletes on) in
+		// step with the cookie above for non-POST requests too — otherwise a browse-only user
+		// whose cookie keeps rolling forward on every GET still has their DB session silently
+		// reaped after 2 weeks, logging them out with no warning. POST gets its own refresh
+		// below, after CSRF checks, so it isn't extended by a rejected cross-origin POST.
+		if (event.request.method !== "POST") {
+			await collections.sessions.updateOne(
+				{ sessionId },
+				{ $set: { updatedAt: new Date(), expiresAt: addWeeks(new Date(), 2) } }
+			);
+		}
 	}
 
 	// CSRF protection
