@@ -8,8 +8,7 @@ name: release-please
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch: {}
+    branches: [main, test/release-please-dryrun]
 
 permissions:
   contents: write
