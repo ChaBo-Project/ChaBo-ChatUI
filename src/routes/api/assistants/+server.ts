@@ -9,6 +9,10 @@ import { ReviewStatus } from "$lib/types/Review";
 const NUM_PER_PAGE = 24;
 
 export async function GET({ url, locals }) {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		return Response.json({ message: "Assistants are not enabled" }, { status: 403 });
+	}
+
 	const modelId = url.searchParams.get("modelId");
 	const pageIndex = parseInt(url.searchParams.get("p") ?? "0");
 	const username = url.searchParams.get("user");
