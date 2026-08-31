@@ -60,4 +60,3 @@ jobs:
             INCLUDE_DB=true
           tags: |
             ghcr.io/chabo-project/chabo-chatui-db:${{ needs.release-please.outputs.version }}
-            ghcr.io/chabo-project/chabo-chatui-db:latest
