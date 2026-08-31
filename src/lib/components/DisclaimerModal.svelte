@@ -26,6 +26,7 @@
 
 		<p class="text-sm text-gray-500">
 			{envPublic.PUBLIC_APP_DISCLAIMER_MESSAGE}
+			<a href="{base}/privacy" class="underline hover:text-gray-800">Read Me</a>
 		</p>
 
 		<div class="flex w-full flex-col items-center gap-2">
@@ -49,7 +50,7 @@
 						Explore the app
 					{/if}
 				{:else}
-					Start chatting
+					I understand - Start Chatting
 				{/if}
 			</button>
 			{#if $page.data.loginEnabled}

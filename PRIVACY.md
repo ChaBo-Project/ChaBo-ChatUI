@@ -1,42 +1,37 @@
+## Disclaimers
+
+Disclaimer: AI is an area of active research with known problems such as
+biased generation and misinformation. Do not use this application for
+high-stakes decisions or advice. Do not insert your personal data,
+especially sensitive, like health data.
+
+## AI Act Transparency Notice
+
+[PLACEHOLDER — add your AI system's risk classification and transparency disclosures here]
+
 ## Privacy
 
-> Last updated: April 15, 2024
+> Last updated: 2026-08-31
 
-Users of HuggingChat are authenticated through their HF user account.
+ChaBo does not require an account or login — you can use it anonymously.
 
-We endorse Privacy by Design. As such, your conversations are private to you and will not be shared with anyone, including model authors, for any purpose, including for research or model training purposes.
+Your conversations are stored so you can access your chat history. You can
+delete any past conversation at any time using the delete icon next to it.
+There is currently no automatic expiry on stored conversations — deleting
+them yourself is the only way to remove them.
 
-You conversation data will only be stored to let you access past conversations. You can click on the Delete icon to delete any past conversation at any moment.
+We record usage statistics (such as questions asked, session duration, and
+anonymous technical/geographic information) to understand performance and
+improve the service. This is based on our legitimate interest in improving
+ChaBo, not on selling or sharing your data with third parties.
 
-🗓 Please also consult huggingface.co's main privacy policy at <https://huggingface.co/privacy>. To exercise any of your legal privacy rights, please send an email to <privacy@huggingface.co>.
+**Do not enter personal or sensitive information in your messages**,
+especially health data — ChaBo is not designed or reviewed to handle it
+safely.
 
-## About available LLMs
+To exercise privacy rights over your data (e.g. requesting deletion), open
+an issue at <https://github.com/ChaBo-Project/ChaBo-ChatUI/issues>.
 
-The goal of this app is to showcase that it is now possible to build an open source alternative to ChatGPT. 💪
+## About ChaBo
 
-We aim to always provide a diverse set of state of the art open LLMs, hence we rotate the available models over time.
-
-Historically, HuggingChat has been running models such as:
-
-- [Llama 2 70B](https://huggingface.co/meta-llama/Llama-2-70b-chat-hf)
-- [CodeLlama 35B](https://about.fb.com/news/2023/08/code-llama-ai-for-coding/)
-- [Falcon 180B](https://www.tii.ae/news/technology-innovation-institute-introduces-worlds-most-powerful-open-llm-falcon-180b)
-- [Mistral 7B](https://mistral.ai/news/announcing-mistral-7b/)
-- [Cohere Command R+](https://huggingface.co/chat/models/CohereForAI/c4ai-command-r-plus)
-- [Google Gemma 7B](https://huggingface.co/chat/models/google/gemma-1.1-7b-it)
-
-This is only a partial list. Check the [models](https://huggingface.co/chat/models/) page for up-to-date list of the best available LLMs.
-
-## Technical details
-
-This app is running in a [Space](https://huggingface.co/docs/hub/spaces-overview), which entails that the code for this UI is publicly visible [inside the Space repo](https://huggingface.co/spaces/huggingchat/chat-ui/tree/main).
-
-**Further development takes place on the [huggingface/chat-ui GitHub repo](https://github.com/huggingface/chat-ui).**
-
-The inference backend is running the optimized [text-generation-inference](https://github.com/huggingface/text-generation-inference) on HuggingFace's Inference API infrastructure.
-
-It is therefore possible to deploy a copy of this app to a Space and customize it (swap model, add some UI elements, or store user messages according to your own Terms and conditions). You can also 1-click deploy your own instance using the [Chat UI Spaces Docker template](https://huggingface.co/new-space?template=huggingchat/chat-ui-template).
-
-We welcome any feedback on this app: please participate to the public discussion at <https://huggingface.co/spaces/huggingchat/chat-ui/discussions>
-
-<a target="_blank" href="https://huggingface.co/spaces/huggingchat/chat-ui/discussions"><img src="https://huggingface.co/datasets/huggingface/badges/raw/main/open-a-discussion-xl.svg" title="open a discussion"></a>
+ChaBo is an open source RAG assistant — see the [ChaBo-Project GitHub org](https://github.com/ChaBo-Project).

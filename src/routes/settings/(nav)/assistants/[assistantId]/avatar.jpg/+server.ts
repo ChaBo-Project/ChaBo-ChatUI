@@ -1,8 +1,13 @@
+import { env } from "$env/dynamic/private";
 import { collections } from "$lib/server/database";
 import { error, type RequestHandler } from "@sveltejs/kit";
 import { ObjectId } from "mongodb";
 
 export const GET: RequestHandler = async ({ params }) => {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		error(404, "No assistant found");
+	}
+
 	const assistant = await collections.assistants.findOne({
 		_id: new ObjectId(params.assistantId),
 	});

@@ -10,6 +10,12 @@ import type { Assistant } from "$lib/types/Assistant";
 import { ReviewStatus } from "$lib/types/Review";
 import { sendSlack } from "$lib/server/sendSlack";
 
+export const load = async () => {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		redirect(302, `${base}/settings`);
+	}
+};
+
 async function assistantOnlyIfAuthor(locals: App.Locals, assistantId?: string) {
 	const assistant = await collections.assistants.findOne({ _id: new ObjectId(assistantId) });
 

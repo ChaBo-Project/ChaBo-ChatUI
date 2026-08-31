@@ -74,13 +74,15 @@
 		</label>
 
 		<div class="mt-12 flex flex-col gap-3">
-			<a
-				href="https://huggingface.co/spaces/huggingchat/chat-ui/discussions"
-				target="_blank"
-				rel="noreferrer"
-				class="flex items-center underline decoration-gray-300 underline-offset-2 hover:decoration-gray-700"
-				><CarbonArrowUpRight class="mr-1.5 shrink-0 text-sm " /> Share your feedback on HuggingChat</a
-			>
+			{#if envPublic.PUBLIC_APP_ISSUE_URL}
+				<a
+					href={envPublic.PUBLIC_APP_ISSUE_URL}
+					target="_blank"
+					rel="noreferrer"
+					class="flex items-center underline decoration-gray-300 underline-offset-2 hover:decoration-gray-700"
+					><CarbonArrowUpRight class="mr-1.5 shrink-0 text-sm " /> Share your feedback</a
+				>
+			{/if}
 			<button
 				on:click|preventDefault={() => (isConfirmingDeletion = true)}
 				type="submit"

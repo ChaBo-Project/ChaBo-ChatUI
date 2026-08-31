@@ -1,4 +1,5 @@
 import { base } from "$app/paths";
+import { env } from "$env/dynamic/private";
 import { authCondition, requiresUser } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
 import { fail, type Actions, redirect } from "@sveltejs/kit";
@@ -75,8 +76,19 @@ const uploadAvatar = async (avatar: File, assistantId: ObjectId): Promise<string
 	});
 };
 
+export const load = async () => {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		redirect(302, `${base}/settings`);
+	}
+};
+
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
+		if (env.ENABLE_ASSISTANTS !== "true") {
+			const errors = [{ field: "preprompt", message: "Assistants are not enabled" }];
+			return fail(403, { error: true, errors });
+		}
+
 		const formData = Object.fromEntries(await request.formData());
 
 		const parse = await newAsssistantSchema.safeParseAsync(formData);
