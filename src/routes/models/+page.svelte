@@ -43,10 +43,7 @@
 				<div
 					class="relative flex flex-col gap-2 overflow-hidden rounded-xl border bg-gray-50/50 px-6 py-5 shadow dark:border-gray-800/70 dark:bg-gray-950/20"
 				>
-					<a
-						href="{base}/models/{model.id}"
-						class="flex flex-col gap-2 hover:opacity-80"
-					>
+					<a href="{base}/models/{model.id}" class="flex flex-col gap-2 hover:opacity-80">
 						<div class="flex items-center justify-between gap-1">
 							{#if model.logoUrl}
 								<img
