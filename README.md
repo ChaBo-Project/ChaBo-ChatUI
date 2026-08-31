@@ -439,7 +439,7 @@ cost-bearing RAG endpoint from abuse:
 USAGE_LIMITS=`{ "messagesPerMinute": 10, "messages": 50, "messageLength": 2000, "conversations": 20 }`
 ```
 
-`messagesPerMinute` uses a sliding 60s window checked *before* the current request, so `N` actually
+`messagesPerMinute` uses a sliding 60s window checked _before_ the current request, so `N` actually
 allows `N+1` through before the `N+2`th is blocked. `BODY_SIZE_LIMIT` (default 15MB) caps total
 request size — file uploads separately have their own hardcoded 10MB-per-file cap, not
 configurable here.

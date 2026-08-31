@@ -52,7 +52,9 @@
 									alt=""
 								/>
 							{:else}
-								<div class="size-6 rounded border border-transparent bg-gray-300 dark:bg-gray-800" />
+								<div
+									class="size-6 rounded border border-transparent bg-gray-300 dark:bg-gray-800"
+								/>
 							{/if}
 							{#if model.tools}
 								<div
