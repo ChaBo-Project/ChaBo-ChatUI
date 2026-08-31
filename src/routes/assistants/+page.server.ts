@@ -10,7 +10,7 @@ import { ReviewStatus } from "$lib/types/Review";
 const NUM_PER_PAGE = 24;
 
 export const load = async ({ url, locals }) => {
-	if (!env.ENABLE_ASSISTANTS) {
+	if (env.ENABLE_ASSISTANTS !== "true") {
 		redirect(302, `${base}/`);
 	}
 

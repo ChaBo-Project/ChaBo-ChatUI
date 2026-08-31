@@ -1,4 +1,5 @@
 import ChatThumbnail from "./ChatThumbnail.svelte";
+import { env } from "$env/dynamic/private";
 import { collections } from "$lib/server/database";
 import { error, type RequestHandler } from "@sveltejs/kit";
 import { ObjectId } from "mongodb";
@@ -13,6 +14,10 @@ import InterBold from "$lib/server/fonts/Inter-Bold.ttf";
 import sharp from "sharp";
 
 export const GET: RequestHandler = (async ({ params }) => {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		error(404, "Assistant not found.");
+	}
+
 	const assistant = await collections.assistants.findOne({
 		_id: new ObjectId(params.assistantId),
 	});

@@ -1,8 +1,15 @@
 import { base } from "$app/paths";
+import { env } from "$env/dynamic/private";
 import { requiresUser } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
 import { fail, type Actions, redirect } from "@sveltejs/kit";
 import { ObjectId } from "mongodb";
+
+export const load = async () => {
+	if (env.ENABLE_ASSISTANTS !== "true") {
+		redirect(302, `${base}/settings`);
+	}
+};
 
 import { z } from "zod";
 import { sha256 } from "$lib/utils/sha256";
