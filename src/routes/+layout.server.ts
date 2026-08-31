@@ -214,6 +214,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 			name: model.name,
 			websiteUrl: model.websiteUrl,
 			modelUrl: model.modelUrl,
+			chaboUrl: model.chaboUrl,
 			tokenizer: model.tokenizer,
 			datasetName: model.datasetName,
 			datasetUrl: model.datasetUrl,

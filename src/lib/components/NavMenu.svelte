@@ -57,13 +57,13 @@
 	<a
 		href={`${base}/`}
 		on:click={handleNewChatClick}
-		class="flex rounded-lg border bg-white px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 dark:bg-gray-700 sm:text-smd"
+		class="flex rounded-lg border bg-app-surface px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 sm:text-smd"
 	>
 		New Chat
 	</a>
 </div>
 <div
-	class="scrollbar-custom flex flex-col gap-1 overflow-y-auto rounded-r-xl from-gray-50 px-3 pb-3 pt-2 text-[.9rem] dark:from-gray-800/30 max-sm:bg-gradient-to-t md:bg-gradient-to-l"
+	class="scrollbar-custom flex flex-col gap-1 overflow-y-auto rounded-r-xl from-app-surface px-3 pb-3 pt-2 text-[.9rem] dark:from-app-surface/30 max-sm:bg-gradient-to-t md:bg-gradient-to-l"
 >
 	{#await groupedConversations}
 		{#if $page.data.nConversations > 0}
@@ -92,13 +92,13 @@
 	{/await}
 </div>
 <div
-	class="mt-0.5 flex flex-col gap-1 rounded-r-xl p-3 text-sm md:bg-gradient-to-l md:from-gray-50 md:dark:from-gray-800/30"
+	class="mt-0.5 flex flex-col gap-1 rounded-r-xl p-3 text-sm md:bg-gradient-to-l md:from-app-surface md:dark:from-app-surface/30"
 >
 	{#if user?.username || user?.email}
 		<form
 			action="{base}/logout"
 			method="post"
-			class="group flex items-center gap-1.5 rounded-lg pl-2.5 pr-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+			class="group flex items-center gap-1.5 rounded-lg pl-2.5 pr-2 hover:bg-app-surface/70"
 		>
 			<span
 				class="flex h-9 flex-none shrink items-center gap-1.5 truncate pr-2 text-gray-500 dark:text-gray-400"
@@ -118,25 +118,25 @@
 		<form action="{base}/login" method="POST" target="_parent">
 			<button
 				type="submit"
-				class="flex h-9 w-full flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+				class="flex h-9 w-full flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 			>
 				Login
 			</button>
 		</form>
 	{/if}
-	<!-- <button
+	<button
 		on:click={switchTheme}
 		type="button"
-		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
 		Theme
-	</button> -->
-	{#if nModels > 1}
+	</button>
+	{#if nModels > 0}
 		<a
 			href="{base}/models"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
-			Assistants
+			Models
 			<span
 				class="ml-auto rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>{nModels}</span
@@ -146,7 +146,7 @@
 	{#if $page.data.enableAssistants}
 		<a
 			href="{base}/assistants"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			Assistants
 		</a>
@@ -154,7 +154,7 @@
 	{#if $page.data.enableCommunityTools}
 		<a
 			href="{base}/tools"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			Tools
 			<span
@@ -166,14 +166,14 @@
 
 	<!-- <a
 		href="{base}/settings"
-		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
 		Settings
 	</a> -->
 	{#if envPublic.PUBLIC_APP_NAME === "HuggingChat"}
 		<a
 			href="{base}/privacy"
-			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
 			About & Privacy
 		</a>

@@ -171,6 +171,11 @@ export class MetricsServer {
 		};
 
 		app.get("/metrics", (req, res) => {
+			if (env.METRICS_SECRET && req.headers.authorization !== `Bearer ${env.METRICS_SECRET}`) {
+				res.status(401).send("Unauthorized");
+				return;
+			}
+
 			register.metrics().then((metrics) => {
 				res.set("Content-Type", "text/plain");
 				res.send(metrics);

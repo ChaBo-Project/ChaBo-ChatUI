@@ -400,7 +400,6 @@
 </svelte:head>
 
 <ChatWindow
-	key={data.model}
 	{loading}
 	{pending}
 	{messages}

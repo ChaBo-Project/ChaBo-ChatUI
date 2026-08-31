@@ -12,6 +12,7 @@ export type Model = Pick<
 	| "description"
 	| "logoUrl"
 	| "modelUrl"
+	| "chaboUrl"
 	| "tokenizer"
 	| "datasetUrl"
 	| "preprompt"

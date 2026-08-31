@@ -97,7 +97,6 @@
 
 	$: urlNotTrailing = $page.url.pathname.replace(/\/$/, "");
 
-
 	const dispatch = createEventDispatcher<{
 		retry: { content?: string; id: Message["id"] };
 		vote: { score: Message["score"]; id: Message["id"] };
@@ -179,12 +178,11 @@
 		({ type }) => type === MessageUpdateType.FinalAnswer
 	) as MessageFinalAnswerUpdate;
 
-
 	// $: {
 	// 	console.log('RAG Debug - Raw message:', message);
 	// 	console.log('RAG Debug - Message updates:', message.updates);
 	// 	console.log('RAG Debug - Message updates types:', message.updates?.map(u => u.type));
-		
+
 	// 	if (messageFinalAnswer) {
 	// 		console.log('RAG Debug - messageFinalAnswer found:', messageFinalAnswer);
 	// 		console.log('RAG Debug - webSources in messageFinalAnswer:', messageFinalAnswer.webSources);
@@ -297,7 +295,7 @@
 			/>
 		{/if}
 		<div
-			class="relative min-h-[calc(2rem+theme(spacing[3.5])*2)] min-w-[60px] break-words rounded-2xl border border-gray-100 bg-gradient-to-br from-gray-50 px-5 py-3.5 text-gray-600 prose-pre:my-2 dark:border-gray-800 dark:from-gray-800/40 dark:text-gray-300"
+			class="relative min-h-[calc(2rem+theme(spacing[3.5])*2)] min-w-[60px] break-words rounded-2xl border border-gray-100 bg-gradient-to-br from-app-surface px-5 py-3.5 text-gray-600 prose-pre:my-2 dark:border-gray-800 dark:from-app-surface/40 dark:text-gray-300"
 		>
 			{#if message.files?.length}
 				<div class="flex h-fit flex-wrap gap-x-5 gap-y-2">
@@ -347,9 +345,7 @@
 				bind:this={contentEl}
 			>
 				{#if isLast && loading && !message.content && tokens.length === 0}
-					<p class="text-gray-500 dark:text-gray-400 italic">
-						Thinking about your query  
-					</p>
+					<p class="italic text-gray-500 dark:text-gray-400">Thinking about your query</p>
 				{:else if isLast && loading && $settings.disableStream}
 					<IconLoading classNames="loading inline ml-2 first:ml-0" />
 				{/if}
@@ -371,7 +367,7 @@
 					<div class="text-gray-400">Sources:<br /></div>
 					{#each webSearchSources as { link, title }}
 						<a
-							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+							class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
 							href={link}
 							target="_blank"
 						>
@@ -438,45 +434,38 @@
 				</div>
 			{/if} -->
 
-				<!-- SIMPLIFIED SOURCES DISPLAY  -->
+			<!-- SIMPLIFIED SOURCES DISPLAY  -->
 			{#if messageFinalAnswer && messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
 				<div class="mt-4 text-sm">
-					<div class="text-gray-400 mb-2">Sources:</div>
+					<div class="mb-2 text-gray-400">Sources:</div>
 					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
 						{#each messageFinalAnswer.webSources as { uri, title }, index}
 							{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
-							{@const uniqueCitations = [...new Set(allCitations.map(match => parseInt(match.slice(1, -1))))].sort((a, b) => a - b)}
-							{@const isHttpSource =
-								uri?.startsWith("http://") || uri?.startsWith("https://")}
+							{@const uniqueCitations = [
+								...new Set(allCitations.map((match) => parseInt(match.slice(1, -1)))),
+							].sort((a, b) => a - b)}
+							{@const isHttpSource = uri?.startsWith("http://") || uri?.startsWith("https://")}
 							{#if isHttpSource}
 								<a
-									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700"
 									href={uri}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+									<span class="mr-1 text-xs font-medium text-gray-500 dark:text-gray-400">
 										[{uniqueCitations[index] || index + 1}]
 									</span>
-									<img
-										class="h-3.5 w-3.5 rounded"
-										src="/favicon.ico"
-										alt="Document icon"
-									/>
+									<img class="h-3.5 w-3.5 rounded" src="/favicon.ico" alt="Document icon" />
 									<div>{title ?? uri}</div>
 								</a>
 							{:else}
 								<div
-									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
+									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none dark:border-gray-800"
 								>
-									<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
+									<span class="mr-1 text-xs font-medium text-gray-500 dark:text-gray-400">
 										[{uniqueCitations[index] || index + 1}]
 									</span>
-									<img
-										class="h-3.5 w-3.5 rounded"
-										src="/favicon.ico"
-										alt="Document icon"
-									/>
+									<img class="h-3.5 w-3.5 rounded" src="/favicon.ico" alt="Document icon" />
 									<div>{title ?? uri}</div>
 								</div>
 							{/if}
@@ -484,8 +473,7 @@
 					</div>
 				</div>
 			{/if}
-
-		</div>	
+		</div>
 
 		{#if !loading && (message.content || toolUpdates)}
 			<div

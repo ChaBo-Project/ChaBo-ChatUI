@@ -57,13 +57,35 @@ const secure = z
 	.default(!(dev || env.ALLOW_INSECURE_COOKIES === "true"))
 	.parse(env.COOKIE_SECURE === "" ? undefined : env.COOKIE_SECURE === "true");
 
+/**
+ * A `SameSite=None; Secure` cookie is a third-party cookie as soon as the app is framed
+ * (which is what every visitor of huggingface.co/spaces/... gets), and browsers that block
+ * third-party cookies drop it — the session then never persists. Adding `Partitioned` (CHIPS)
+ * gives us a cookie that is keyed to the embedding site and is still sent inside the iframe on
+ * Chrome and Firefox. Safari does not implement CHIPS, so there we fall back to telling the user
+ * to open the app in a new tab (see `cookiesAreEnabled` and the banner in `+layout.svelte`).
+ */
+const partitioned = z
+	.boolean()
+	.default(sameSite === "none" && secure)
+	.parse(!env.COOKIE_PARTITIONED ? undefined : env.COOKIE_PARTITIONED === "true");
+
+/**
+ * Single source of truth for the session cookie attributes. Both the refresh and the delete path
+ * must use the exact same attributes, otherwise the delete silently fails to match the cookie.
+ */
+export const sessionCookieOptions = {
+	path: "/",
+	// So that it works inside the space's iframe
+	sameSite,
+	secure,
+	partitioned,
+	httpOnly: true,
+} satisfies Parameters<Cookies["set"]>[2];
+
 export function refreshSessionCookie(cookies: Cookies, sessionId: string) {
 	cookies.set(env.COOKIE_NAME, sessionId, {
-		path: "/",
-		// So that it works inside the space's iframe
-		sameSite,
-		secure,
-		httpOnly: true,
+		...sessionCookieOptions,
 		expires: addWeeks(new Date(), 2),
 	});
 }

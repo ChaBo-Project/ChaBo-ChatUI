@@ -20,11 +20,17 @@
 	import titleUpdate from "$lib/stores/titleUpdate";
 	import DisclaimerModal from "$lib/components/DisclaimerModal.svelte";
 	import ExpandNavigation from "$lib/components/ExpandNavigation.svelte";
+	import CookiesBlockedBanner from "$lib/components/CookiesBlockedBanner.svelte";
+	import { serverCookieIsSet } from "$lib/utils/serverCookieIsSet";
+	import { surfaceOverrideStyleTag } from "$lib/utils/surfaceOverride";
 
 	export let data;
 
 	let isNavOpen = false;
 	let isNavCollapsed = false;
+	let cookiesBlocked = false;
+
+	const surfaceStyleTag = surfaceOverrideStyleTag();
 
 	let errorToastTimeout: ReturnType<typeof setTimeout>;
 	let currentError: string | null;
@@ -115,6 +121,11 @@
 	const settings = createSettingsStore(data.settings);
 
 	onMount(async () => {
+		// The document response carried a `Set-Cookie` for the session; ask the server whether the
+		// browser actually kept it. If not, every write lands under a throwaway session and the app
+		// is broken in a way whose symptoms point nowhere useful, so say so up front.
+		cookiesBlocked = !(await serverCookieIsSet());
+
 		if ($page.url.searchParams.has("model")) {
 			await settings
 				.instantSet({
@@ -153,9 +164,13 @@
 
 <svelte:head>
 	<title>{envPublic.PUBLIC_APP_NAME}</title>
-	<meta name="description" content="The first open source alternative to ChatGPT. 💪" />
+	<meta name="description" content={envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@huggingface" />
+
+	<!-- Runtime surface colours, so an embed can be recoloured without a rebuild. -->
+	<!-- Not user input: built from environment variables and normalised to RGB channels first. -->
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html surfaceStyleTag}
 
 	<!-- use those meta tags everywhere except on the share assistant page -->
 	<!-- feel free to refacto if there's a better way -->
@@ -166,9 +181,12 @@
 		<meta
 			property="og:image"
 			content="{envPublic.PUBLIC_ORIGIN ||
-				$page.url.origin}{base}/{envPublic.PUBLIC_APP_ASSETS}/thumbnail.png"
+				$page.url.origin}{base}/{envPublic.PUBLIC_APP_ASSETS}/icon-512x512.png"
 		/>
-		<meta property="og:description" content={envPublic.PUBLIC_APP_DESCRIPTION} />
+		<meta
+			property="og:description"
+			content={envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"}
+		/>
 	{/if}
 	<link
 		rel="icon"
@@ -187,11 +205,8 @@
 		href="{envPublic.PUBLIC_ORIGIN ||
 			$page.url.origin}{base}/{envPublic.PUBLIC_APP_ASSETS}/apple-touch-icon.png"
 	/>
-	<link
-		rel="manifest"
-		href="{envPublic.PUBLIC_ORIGIN ||
-			$page.url.origin}{base}/{envPublic.PUBLIC_APP_ASSETS}/manifest.json"
-	/>
+	<!-- Served by src/routes/manifest.json/+server.ts so the app name is not hardcoded. -->
+	<link rel="manifest" href="{envPublic.PUBLIC_ORIGIN || $page.url.origin}{base}/manifest.json" />
 
 	{#if envPublic.PUBLIC_PLAUSIBLE_SCRIPT_URL && envPublic.PUBLIC_ORIGIN}
 		<script
@@ -218,35 +233,45 @@
 		: 'left-0'} *:transition-transform"
 />
 
-<div
-	class="grid h-full w-screen grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd {!isNavCollapsed
-		? 'md:grid-cols-[280px,1fr]'
-		: 'md:grid-cols-[0px,1fr]'} transition-[300ms] [transition-property:grid-template-columns] dark:text-gray-300 md:grid-rows-[1fr]"
->
-	<MobileNav isOpen={isNavOpen} on:toggle={(ev) => (isNavOpen = ev.detail)} title={mobileNavTitle}>
-		<NavMenu
-			conversations={data.conversations}
-			user={data.user}
-			canLogin={data.user === undefined && data.loginEnabled}
-			on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
-			on:deleteConversation={(ev) => deleteConversation(ev.detail)}
-			on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
-		/>
-	</MobileNav>
-	<nav
-		class=" grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden *:w-[280px] max-md:hidden"
-	>
-		<NavMenu
-			conversations={data.conversations}
-			user={data.user}
-			canLogin={data.user === undefined && data.loginEnabled}
-			on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
-			on:deleteConversation={(ev) => deleteConversation(ev.detail)}
-			on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
-		/>
-	</nav>
-	{#if currentError}
-		<Toast message={currentError} />
+<!-- The banner sits outside the app grid so that showing it does not consume one of its rows. -->
+<div class="flex h-full w-screen flex-col">
+	{#if cookiesBlocked}
+		<CookiesBlockedBanner />
 	{/if}
-	<slot />
+	<div
+		class="grid min-h-0 w-full flex-1 grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd {!isNavCollapsed
+			? 'md:grid-cols-[280px,1fr]'
+			: 'md:grid-cols-[0px,1fr]'} transition-[300ms] [transition-property:grid-template-columns] dark:text-gray-300 md:grid-rows-[1fr]"
+	>
+		<MobileNav
+			isOpen={isNavOpen}
+			on:toggle={(ev) => (isNavOpen = ev.detail)}
+			title={mobileNavTitle}
+		>
+			<NavMenu
+				conversations={data.conversations}
+				user={data.user}
+				canLogin={data.user === undefined && data.loginEnabled}
+				on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
+				on:deleteConversation={(ev) => deleteConversation(ev.detail)}
+				on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
+			/>
+		</MobileNav>
+		<nav
+			class=" grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden *:w-[280px] max-md:hidden"
+		>
+			<NavMenu
+				conversations={data.conversations}
+				user={data.user}
+				canLogin={data.user === undefined && data.loginEnabled}
+				on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
+				on:deleteConversation={(ev) => deleteConversation(ev.detail)}
+				on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
+			/>
+		</nav>
+		{#if currentError}
+			<Toast message={currentError} />
+		{/if}
+		<slot />
+	</div>
 </div>

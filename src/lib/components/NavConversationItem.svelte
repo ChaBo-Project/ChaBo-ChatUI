@@ -25,9 +25,9 @@
 		confirmDelete = false;
 	}}
 	href="{base}/conversation/{conv.id}"
-	class="group flex h-10 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 sm:h-[2.35rem] {conv.id ===
+	class="group flex h-10 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-600 hover:bg-app-surface/70 dark:text-gray-300 sm:h-[2.35rem] {conv.id ===
 	$page.params.id
-		? 'bg-gray-100 dark:bg-gray-700'
+		? 'bg-app-surface'
 		: ''}"
 >
 	<div class="flex flex-1 items-center truncate">

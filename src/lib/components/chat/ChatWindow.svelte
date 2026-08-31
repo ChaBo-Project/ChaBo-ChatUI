@@ -6,7 +6,6 @@
 	import CarbonExport from "~icons/carbon/export";
 	import CarbonStopFilledAlt from "~icons/carbon/stop-filled-alt";
 	import CarbonCheckmark from "~icons/carbon/checkmark";
-	import CarbonCaretDown from "~icons/carbon/caret-down";
 
 	import EosIconsLoading from "~icons/eos-icons/loading";
 
@@ -237,7 +236,6 @@
 	];
 
 	$: isFileUploadEnabled = activeMimeTypes.length > 0;
-
 </script>
 
 <svelte:window
@@ -361,7 +359,7 @@
 		/>
 	</div>
 	<div
-		class="dark:via-gray-80 pointer-events-none absolute inset-x-0 bottom-0 z-0 mx-auto flex w-full max-w-3xl flex-col items-center justify-center bg-gradient-to-t from-white via-white/80 to-white/0 px-3.5 py-4 dark:border-gray-800 dark:from-gray-900 dark:to-gray-900/0 max-md:border-t max-md:bg-white max-md:dark:bg-gray-900 sm:px-5 md:py-8 xl:max-w-4xl [&>*]:pointer-events-auto"
+		class="pointer-events-none absolute inset-x-0 bottom-0 z-0 mx-auto flex w-full max-w-3xl flex-col items-center justify-center bg-gradient-to-t from-app-bg via-app-bg/80 to-app-bg/0 px-3.5 py-4 dark:border-gray-800 max-md:border-t max-md:bg-app-bg sm:px-5 md:py-8 xl:max-w-4xl [&>*]:pointer-events-auto"
 	>
 		{#if sources?.length && !loading}
 			<div
@@ -407,10 +405,10 @@
 					<div class="ml-auto gap-2">
 						{#if isFileUploadEnabled}
 							<!-- <UploadBtn bind:files mimeTypes={activeMimeTypes} classNames="ml-auto" /> -->
-							<UploadBtn 
-								bind:files 
-								mimeTypes={activeMimeTypes} 
-								currentModel={currentModel} 
+							<UploadBtn
+								bind:files
+								mimeTypes={activeMimeTypes}
+								{currentModel}
 								classNames="ml-auto"
 								on:filesUploaded={() => {
 									// Auto-submit when files are uploaded
@@ -440,7 +438,7 @@
 				tabindex="-1"
 				aria-label={isFileUploadEnabled ? "file dropzone" : undefined}
 				on:submit|preventDefault={handleSubmit}
-				class="relative flex w-full max-w-4xl flex-1 items-center rounded-xl border bg-gray-100 focus-within:border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:focus-within:border-gray-500
+				class="relative flex w-full max-w-4xl flex-1 items-center rounded-xl border bg-app-surface focus-within:border-gray-300 dark:border-gray-600 dark:focus-within:border-gray-500
             {isReadOnly ? 'opacity-30' : ''}"
 			>
 				{#if onDrag && isFileUploadEnabled}
@@ -505,10 +503,7 @@
 								class="inline-flex items-center hover:underline"
 								>{currentModel.displayName}<CarbonCaretDown class="text-xxs" /></a
 							> -->
-							<span
-								class="inline-flex items-center"
-								>{currentModel.displayName}</span
-							>
+							<span class="inline-flex items-center">{currentModel.displayName}</span>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
 								{currentModel.id}
@@ -522,10 +517,9 @@
 								class="inline-flex items-center border-b hover:text-gray-600 dark:border-gray-700 dark:hover:text-gray-300"
 								>{model?.displayName}<CarbonCaretDown class="text-xxs" /></a
 							> -->
-							<span
-							class="inline-flex items-center border-b dark:border-gray-700"
-							>{model?.displayName}</span
-						>
+							<span class="inline-flex items-center border-b dark:border-gray-700"
+								>{model?.displayName}</span
+							>
 						{:else}
 							<span class="inline-flex items-center line-through dark:border-gray-700">
 								{currentModel.id}

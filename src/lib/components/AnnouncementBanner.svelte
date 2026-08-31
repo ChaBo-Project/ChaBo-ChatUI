@@ -3,11 +3,7 @@
 	export let classNames = "";
 </script>
 
-<div class="flex items-center rounded-xl bg-gray-100 p-1 text-sm dark:bg-gray-800 {classNames}">
-	<span
-		class="from-primary-300 text-primary-700 dark:from-primary-900 dark:text-primary-400 mr-2 inline-flex items-center rounded-lg bg-gradient-to-br px-2 py-1 text-xxs font-medium uppercase leading-3"
-		>INFO</span
-	>
+<div class="flex items-center rounded-xl bg-app-surface py-1 pl-3 pr-1 text-sm {classNames}">
 	{title}
 	<div class="ml-auto shrink-0">
 		<slot />

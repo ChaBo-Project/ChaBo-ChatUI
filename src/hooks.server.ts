@@ -60,6 +60,8 @@ export const handleError: HandleServerError = async ({ error, event, status, mes
 		request: event.request,
 		message,
 		error,
+		errorMessage: error instanceof Error ? error.message : String(error),
+		errorStack: error instanceof Error ? error.stack : undefined,
 		errorId,
 		status,
 	});
@@ -83,13 +85,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	function errorResponse(status: number, message: string) {
-		const sendJson =
-			event.request.headers.get("accept")?.includes("application/json") ||
-			event.request.headers.get("content-type")?.includes("application/json");
-		return new Response(sendJson ? JSON.stringify({ error: message }) : message, {
+		// Always answer with JSON carrying both keys: every caller of these endpoints is a fetch
+		// client, and they are split between reading `.error` and reading `.message`. Sending only
+		// one of them (or a plain-text body, which the multipart send in `messageUpdates.ts` gets)
+		// makes the client fall back to the generic "Oops, something went wrong." and hides the
+		// actual reason from the user.
+		return new Response(JSON.stringify({ error: message, message }), {
 			status,
 			headers: {
-				"content-type": sendJson ? "application/json" : "text/plain",
+				"content-type": "application/json",
 			},
 		});
 	}
@@ -206,6 +210,30 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	event.locals.sessionId = sessionId;
 
+	// Write the session cookie on POSTs *and* on HTML document requests. Only writing it on POST
+	// means the first write is the POST that a blocked request never reaches: `errorResponse`
+	// returns without going through `resolve`, so SvelteKit never attaches the pending
+	// `Set-Cookie` and the session can never bootstrap. Gating on `accept: text/html` keeps the
+	// header off static asset responses.
+	if (
+		event.request.method === "POST" ||
+		event.request.headers.get("accept")?.includes("text/html")
+	) {
+		refreshSessionCookie(event.cookies, secretSessionId);
+
+		// Keep the DB session's `expiresAt` (what the Mongo TTL index actually deletes on) in
+		// step with the cookie above for non-POST requests too — otherwise a browse-only user
+		// whose cookie keeps rolling forward on every GET still has their DB session silently
+		// reaped after 2 weeks, logging them out with no warning. POST gets its own refresh
+		// below, after CSRF checks, so it isn't extended by a rejected cross-origin POST.
+		if (event.request.method !== "POST") {
+			await collections.sessions.updateOne(
+				{ sessionId },
+				{ $set: { updatedAt: new Date(), expiresAt: addWeeks(new Date(), 2) } }
+			);
+		}
+	}
+
 	// CSRF protection
 	const requestContentType = event.request.headers.get("content-type")?.split(";")[0] ?? "";
 	/** https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-enctype */
@@ -216,8 +244,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	];
 
 	if (event.request.method === "POST") {
-		refreshSessionCookie(event.cookies, event.locals.sessionId);
-
 		if (nativeFormContentTypes.includes(requestContentType)) {
 			const origin = event.request.headers.get("origin");
 
@@ -237,9 +263,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	if (event.request.method === "POST") {
-		// if the request is a POST request we refresh the cookie
-		refreshSessionCookie(event.cookies, secretSessionId);
-
 		await collections.sessions.updateOne(
 			{ sessionId },
 			{ $set: { updatedAt: new Date(), expiresAt: addWeeks(new Date(), 2) } }

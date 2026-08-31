@@ -1,8 +1,17 @@
 import { browser } from "$app/environment";
 
+/**
+ * Whether the document can write and read back a cookie.
+ *
+ * Note this deliberately does *not* short-circuit on `navigator.cookieEnabled`: that property
+ * returns `true` inside a blocked or partitioned third-party iframe, which is exactly the case we
+ * need to detect, and short-circuiting on it made every "open in a new tab" fallback dead code.
+ *
+ * This is necessary but not sufficient — it proves `document.cookie` works, not that the server's
+ * `Set-Cookie` survived. Use `serverCookieIsSet()` for that.
+ */
 export function cookiesAreEnabled(): boolean {
 	if (!browser) return false;
-	if (navigator.cookieEnabled) return navigator.cookieEnabled;
 
 	// Create cookie
 	document.cookie = "cookietest=1";

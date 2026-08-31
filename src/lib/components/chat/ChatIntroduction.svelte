@@ -2,11 +2,8 @@
 	import { env as envPublic } from "$env/dynamic/public";
 	import Logo from "$lib/components/icons/Logo.svelte";
 	import { createEventDispatcher } from "svelte";
-	import IconGear from "~icons/bi/gear-fill";
 	import AnnouncementBanner from "../AnnouncementBanner.svelte";
 	import type { Model } from "$lib/types/Model";
-	import ModelCardMetadata from "../ModelCardMetadata.svelte";
-	import { base } from "$app/paths";
 	import JSON5 from "json5";
 
 	export let currentModel: Model;
@@ -25,14 +22,13 @@
 				<Logo classNames="mr-1 flex-none" />
 				{envPublic.PUBLIC_APP_NAME}
 				<div
-					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-gray-50 px-2 text-base text-gray-400 dark:border-gray-700/60 dark:bg-gray-800"
+					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-app-surface px-2 text-base text-gray-400 dark:border-gray-700/60"
 				>
 					v{envPublic.PUBLIC_VERSION}
 				</div>
 			</div>
 			<p class="text-base text-gray-600 dark:text-gray-400">
-				{envPublic.PUBLIC_APP_DESCRIPTION ||
-					"Making the community's best AI chat models available to everyone."}
+				{envPublic.PUBLIC_APP_DESCRIPTION || "Public App Description"}
 			</p>
 		</div>
 	</div>
@@ -72,7 +68,7 @@
 			<ModelCardMetadata variant="dark" model={currentModel} />
 		</div> -->
 	</div>
-	
+
 	<!-- ADD MODEL-SPECIFIC INSTRUCTIONS HERE (after line 73) -->
 	<!-- {#if currentModel.name === 'uganda_auditbot'}
 		<div class="lg:col-span-2 lg:pl-24 mt-4">
@@ -111,16 +107,18 @@
 	{/if} -->
 
 	{#if currentModel.instructions}
-	<div class="lg:col-span-2 lg:pl-24 mt-4">
-		<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 dark:bg-blue-900/20 dark:border-blue-700">
-			<h3 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">{currentModel.instructions.title || 'Model Instructions'}</h3>
-			<p class="text-blue-700 dark:text-blue-300 text-sm whitespace-pre-line">
-				{currentModel.instructions.content}
-			</p>
+		<div class="mt-4 lg:col-span-2 lg:pl-24">
+			<div class="rounded-lg border border-app-surface bg-app-surface p-4">
+				<h3 class="mb-2 font-semibold text-gray-800 dark:text-gray-200">
+					{currentModel.instructions.title || "Model Instructions"}
+				</h3>
+				<p class="whitespace-pre-line text-sm text-gray-600 dark:text-gray-300">
+					{currentModel.instructions.content}
+				</p>
+			</div>
 		</div>
-	</div>
 	{/if}
-	
+
 	{#if currentModel.promptExamples}
 		<div class="lg:col-span-3 lg:mt-6">
 			<p class="mb-3 text-gray-600 dark:text-gray-300">Examples</p>
@@ -128,7 +126,7 @@
 				{#each currentModel.promptExamples as example}
 					<button
 						type="button"
-						class="rounded-xl border bg-gray-50 p-3 text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 max-xl:text-sm xl:p-3.5"
+						class="rounded-xl border bg-app-surface p-3 text-gray-600 hover:bg-app-surface/70 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-app-surface/70 max-xl:text-sm xl:p-3.5"
 						on:click={() => dispatch("message", example.prompt)}
 					>
 						{example.title}
