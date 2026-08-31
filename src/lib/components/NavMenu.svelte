@@ -2,6 +2,9 @@
 	import { base } from "$app/paths";
 
 	import Logo from "$lib/components/icons/Logo.svelte";
+	import CarbonContrast from "~icons/carbon/contrast";
+	import CarbonInformation from "~icons/carbon/information";
+	import CarbonLocked from "~icons/carbon/locked";
 	import { switchTheme } from "$lib/switchTheme";
 	import { isAborted } from "$lib/stores/isAborted";
 	import { env as envPublic } from "$env/dynamic/public";
@@ -129,6 +132,7 @@
 		type="button"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
+		<CarbonContrast />
 		Theme
 	</button>
 	{#if nModels > 0}
@@ -136,7 +140,8 @@
 			href="{base}/models"
 			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
-			Models
+			<CarbonInformation />
+			About
 			<span
 				class="ml-auto rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>{nModels}</span
@@ -147,7 +152,8 @@
 		href="{base}/privacy"
 		class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 	>
-		About & Privacy
+		<CarbonLocked />
+		Privacy & Legal
 	</a>
 	{#if $page.data.enableAssistants}
 		<a

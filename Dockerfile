@@ -74,6 +74,7 @@ RUN touch /app/.env.local
 # get the default config, the entrypoint script and the server script
 COPY --chown=1000 package.json /app/package.json
 COPY --chown=1000 .env /app/.env
+COPY --chown=1000 PRIVACY.md /app/PRIVACY.md
 COPY --chown=1000 entrypoint.sh /app/entrypoint.sh
 COPY --chown=1000 gcp-*.json /app/
 

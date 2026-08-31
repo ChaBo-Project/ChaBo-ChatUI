@@ -1,3 +1,14 @@
+## Disclaimers
+
+Disclaimer: AI is an area of active research with known problems such as
+biased generation and misinformation. Do not use this application for
+high-stakes decisions or advice. Do not insert your personal data,
+especially sensitive, like health data.
+
+## AI Act Transparency Notice
+
+[PLACEHOLDER — add your AI system's risk classification and transparency disclosures here]
+
 ## Privacy
 
 > Last updated: 2026-08-31
@@ -18,17 +29,9 @@ ChaBo, not on selling or sharing your data with third parties.
 especially health data — ChaBo is not designed or reviewed to handle it
 safely.
 
+To exercise privacy rights over your data (e.g. requesting deletion), open
+an issue at <https://github.com/ChaBo-Project/ChaBo-ChatUI/issues>.
+
 ## About ChaBo
 
-ChaBo answers questions using a curated document collection via
-retrieval-augmented generation (RAG), rather than general open-domain
-knowledge — answers are grounded in that collection and cited with sources,
-but can still be incomplete or wrong. Always verify important information
-before acting on it.
-
-## Technical details
-
-ChaBo is open source. The code for this interface lives in the
-[ChaBo-ChatUI GitHub repo](https://github.com/ChaBo-Project/ChaBo-ChatUI).
-The underlying RAG pipeline and orchestrator are part of the
-[ChaBo project](https://github.com/ChaBo-Project).
+ChaBo is an open source RAG assistant — see the [ChaBo-Project GitHub org](https://github.com/ChaBo-Project).
