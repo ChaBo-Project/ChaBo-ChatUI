@@ -27,6 +27,9 @@ const modelConfig = z.object({
 	logoUrl: z.string().url().optional(),
 	websiteUrl: z.string().url().optional(),
 	modelUrl: z.string().url().optional(),
+	/** Permanent link back to the ChaBo project itself — constant across every ChaBo
+	 * instance/deployment, unlike modelUrl/datasetUrl/websiteUrl which are instance-specific. */
+	chaboUrl: z.string().url().optional(),
 	tokenizer: z
 		.union([
 			z.string(),
