@@ -131,12 +131,12 @@
 	>
 		Theme
 	</button>
-	{#if nModels > 1}
+	{#if nModels > 0}
 		<a
 			href="{base}/models"
 			class="flex h-9 flex-none items-center gap-1.5 rounded-lg pl-2.5 pr-2 text-gray-500 hover:bg-app-surface/70 dark:text-gray-400"
 		>
-			Assistants
+			Models
 			<span
 				class="ml-auto rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-500 dark:border-gray-500 dark:text-gray-400"
 				>{nModels}</span
