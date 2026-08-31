@@ -54,6 +54,10 @@ Create a `.env.local` file with the following configuration:
 ```bash
 # Required: MongoDB for chat history
 MONGODB_URL=mongodb://localhost:27017
+MONGODB_DB_NAME=chabo-chatui
+
+# Recommended: unique per co-hosted instance — see COOKIE_NAME under Theming
+COOKIE_NAME=chabo-chatui
 
 # Required: ChaBo model configuration
 MODELS=`[
@@ -65,7 +69,11 @@ MODELS=`[
       "title": "How to Use",
       "content": "Upload files or ask questions. The system will search relevant documents and provide cited answers.\n\n**Tip:** Upload GeoJSON files for spatial analysis or text files for document-based queries."
     },
-    "multimodal": true,
+    "modelUrl": "https://github.com/your-org/chabo",
+    "datasetUrl": "https://github.com/your-org/chabo",
+    "websiteUrl": "https://github.com/your-org",
+    "chaboUrl": "https://github.com/ChaBo-Project",
+    "multimodal": false,
     "multimodalAcceptedMimetypes": [
       "application/geojson",
       "text/plain"
@@ -112,6 +120,9 @@ PUBLIC_ANNOUNCEMENT_BANNERS=`[
 ]`
 ```
 
+Minimal starting config, not the full list — theming, usage limits, admin, and metrics vars are
+documented separately under [Extra parameters](#extra-parameters).
+
 ### Key Configuration Fields for ChaBo
 
 #### Model Instructions (`instructions`)
@@ -139,6 +150,12 @@ Enable file uploads with specific MIME types:
 ```
 
 The upload button will automatically display accepted file types to users.
+
+#### Model, Dataset & Project Links (`modelUrl`, `datasetUrl`, `websiteUrl`, `chaboUrl`)
+
+Render as clickable links on each card at `/models`. `modelUrl`/`datasetUrl`/`websiteUrl` are
+instance-specific (this deployment's own docs); `chaboUrl` is a constant link back to the ChaBo
+project, the same for every instance.
 
 #### LangServe Streaming Endpoints
 
@@ -236,6 +253,11 @@ In which case the url of your DB will be `MONGODB_URL=mongodb://localhost:27017`
 
 Alternatively, you can use a [free MongoDB Atlas](https://www.mongodb.com/pricing) instance for this, Chat UI should fit comfortably within their free tier. After which you can set the `MONGODB_URL` variable in `.env.local` to match your instance.
 
+Two related optional vars: `MONGODB_DB_NAME` (default `chat-ui`; ChaBo sets `chabo-chatui`; only
+matters sharing a cluster) and `MONGODB_DIRECT_CONNECTION` (only for a bare standalone `mongod`
+with no replica set). Self-hosted Mongo auth goes inline in `MONGODB_URL`
+(`mongodb://user:pass@host:27017/?authSource=admin`) — no separate credential var.
+
 #### Hugging Face Access Token
 
 If you use a remote inference endpoint, you will need a Hugging Face access token to run Chat UI locally. You can get one from [your Hugging Face profile](https://huggingface.co/settings/tokens).
@@ -266,7 +288,7 @@ is **when** each one applies:
 | -------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PUBLIC_APP_NAME`                                        | runtime                               | Page title, `og:title`, logo alt text, web app manifest name.                                                                                                                                                                                                                                                                                                                                                                                       |
 | `PUBLIC_APP_DESCRIPTION`                                 | runtime                               | `og:description`, the `description` meta tag, the intro screen and the modals.                                                                                                                                                                                                                                                                                                                                                                      |
-| `PUBLIC_APP_ASSETS`                                      | runtime lookup, assets are build time | Logos & favicons are read from `static/$PUBLIC_APP_ASSETS/`. The path is resolved at runtime, but the files themselves must already be baked into the image. Bundled options are `chatui` and `huggingchat`.                                                                                                                                                                                                                                        |
+| `PUBLIC_APP_ASSETS`                                      | runtime lookup, assets are build time | Logos & favicons are read from `static/$PUBLIC_APP_ASSETS/`. The path is resolved at runtime, but the files themselves must already be baked into the image. Bundled options are `chatui`, `huggingchat`, and `chabo-official`.                                                                                                                                                                                                                     |
 | `PUBLIC_APP_COLOR`                                       | **build time only**                   | The accent colour. Consumed by `tailwind.config.cjs`, so it is compiled into the stylesheet; `Dockerfile` passes it as a build `ARG`. **Setting it in `DOTENV_LOCAL` has no effect.** It only affects five class sites: `icons/Logo.svelte`, `LoginModal.svelte`, `DisclaimerModal.svelte`, `ChatWindow.svelte`, `ModelThumbnail.svelte` (per-model `og:image`). Can be any of the [tailwind colors](https://tailwindcss.com/docs/customizing-colors#default-color-palette). |
 | `PUBLIC_APP_BACKGROUND`                                  | runtime                               | Light-mode page background. Accepts `#rrggbb`, `#rgb`, `rgb(r, g, b)` or a bare `r g b` triplet. **Quote hex values** — see the note below. Defaults to white.                                                                                                                                                                                                                                                                                      |
 | `PUBLIC_APP_SURFACE`                                     | runtime                               | Light-mode secondary surface — sidebar gradient, mobile nav bar. Defaults to `gray-50`.                                                                                                                                                                                                                                                                                                                                                             |
@@ -283,6 +305,7 @@ is **when** each one applies:
 | `APP_BASE`                                               | **build time**                        | Base path the app is served under (`svelte.config.js`).                                                                                                                                                                                                                                                                                                                                                                                             |
 | `ALLOW_IFRAME`                                           | runtime                               | Anything other than `"true"` makes the server append `Content-Security-Policy: frame-ancestors 'none'`, which blocks embedding outright.                                                                                                                                                                                                                                                                                                            |
 | `COOKIE_SAMESITE`, `COOKIE_SECURE`, `COOKIE_PARTITIONED` | runtime                               | Session cookie attributes — see below.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `COOKIE_NAME`                                            | runtime                               | Default `hf-chat`; ChaBo sets `chabo-chatui`. `path` is always `/`, not scoped to `APP_BASE` — use a unique value per instance if co-hosting behind the same hostname, or sessions will overwrite each other's cookie.                                                                                                                                                                                                                              |
 
 #### Theme selection
 
@@ -403,6 +426,37 @@ For the rest — Anthropic, Amazon, Cloudflare Workers AI, Cohere, Google Vertex
 llama.cpp, TGI, custom-endpoint auth (Basic/Bearer/mTLS), weighted multi-endpoint setups, and
 embedding-model selection — see upstream's full configuration reference:
 [hf.co/docs/chat-ui/configuration/models/overview](https://huggingface.co/docs/chat-ui/configuration/models/overview).
+
+### Usage limits & admin
+
+`EXPOSE_API` (default `true`) gates the whole `/api/*` REST surface — `403` when off. The chat UI
+itself never calls `/api/*`, so this only affects external/scripted access.
+
+`USAGE_LIMITS` (JSON5, all fields optional, unset = unlimited) protects a publicly-embedded,
+cost-bearing RAG endpoint from abuse:
+
+```env
+USAGE_LIMITS=`{ "messagesPerMinute": 10, "messages": 50, "messageLength": 2000, "conversations": 20 }`
+```
+
+`messagesPerMinute` uses a sliding 60s window checked *before* the current request, so `N` actually
+allows `N+1` through before the `N+2`th is blocked. `BODY_SIZE_LIMIT` (default 15MB) caps total
+request size — file uploads separately have their own hardcoded 10MB-per-file cap, not
+configurable here.
+
+`ADMIN_API_SECRET` gates `/admin/*` (usage stats, parquet export) behind
+`Authorization: Bearer <secret>`. `PARQUET_EXPORT_DATASET`/`PARQUET_EXPORT_HF_TOKEN` configure
+where exports upload to.
+
+### Metrics
+
+`METRICS_ENABLED=true` exposes Prometheus-format metrics (latency, tokens, conversations) at
+`/metrics` on `METRICS_PORT` (default 5565) — a **separate** server, its own port. Optional
+`METRICS_SECRET` requires `Authorization: Bearer <secret>`, else it's open.
+
+> [!IMPORTANT]
+> HF Spaces only expose one port (`app_port`), so `METRICS_PORT` isn't externally reachable there
+> unless you route it yourself. Works out of the box in `compose`, where you control port publishing.
 
 ## Common issues
 
