@@ -60,6 +60,8 @@ export const handleError: HandleServerError = async ({ error, event, status, mes
 		request: event.request,
 		message,
 		error,
+		errorMessage: error instanceof Error ? error.message : String(error),
+		errorStack: error instanceof Error ? error.stack : undefined,
 		errorId,
 		status,
 	});
