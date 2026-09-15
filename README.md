@@ -439,7 +439,7 @@ embedding-model selection — see upstream's full configuration reference:
 
 ### Usage limits & admin
 
-`EXPOSE_API` (default `true`) gates the whole `/api/*` REST surface — `403` when off. The chat UI
+`EXPOSE_API` (default `false`) gates the whole `/api/*` REST surface — `403` when off. The chat UI
 itself never calls `/api/*`, so this only affects external/scripted access.
 
 `USAGE_LIMITS` (JSON5, all fields optional, unset = unlimited) protects a publicly-embedded,
@@ -491,6 +491,23 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+### Published images
+
+Each GitHub release publishes two variants to GHCR, tagged with the release version (no `:latest`
+tag — see [org guidelines](https://github.com/ChaBo-Project/.github/blob/main/GUIDELINES.md)):
+
+- `ghcr.io/chabo-project/chabo-chatui-db:<version>` — bundles MongoDB, for standalone/all-in-one
+  deployments that don't want to run a separate DB container.
+- `ghcr.io/chabo-project/chabo-chatui:<version>` — no MongoDB baked in; expects `MONGODB_URL` to
+  point at an external instance (this is the variant used in the `docker-compose` topology, where
+  Mongo runs as its own service — see [ChaBo-Deploy](https://github.com/ChaBo-Project/ChaBo-Deploy)).
+
+```bash
+docker pull ghcr.io/chabo-project/chabo-chatui-db:<version>
+# or
+docker pull ghcr.io/chabo-project/chabo-chatui:<version>
+```
 
 ## Populate database
 
