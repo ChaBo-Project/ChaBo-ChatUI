@@ -18,11 +18,11 @@
 <div class="my-auto grid gap-8 lg:grid-cols-3">
 	<div class="lg:col-span-1">
 		<div>
-			<div class="mb-3 flex items-center text-2xl font-semibold">
+			<div class="mb-3 flex items-center whitespace-nowrap text-2xl font-semibold">
 				<Logo classNames="mr-1 flex-none" />
 				{envPublic.PUBLIC_APP_NAME}
 				<div
-					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-app-surface px-2 text-base text-gray-400 dark:border-gray-700/60"
+					class="ml-3 flex h-6 flex-none items-center rounded-lg border border-gray-100 bg-app-surface px-2 text-base text-gray-400 dark:border-gray-700/60"
 				>
 					v{envPublic.PUBLIC_VERSION}
 				</div>
@@ -107,7 +107,7 @@
 	{/if} -->
 
 	{#if currentModel.instructions}
-		<div class="mt-4 lg:col-span-2 lg:pl-24">
+		<div class="mt-4 lg:col-span-3 lg:mx-auto lg:w-2/3">
 			<div class="rounded-lg border border-app-surface bg-app-surface p-4">
 				<h3 class="mb-2 font-semibold text-gray-800 dark:text-gray-200">
 					{currentModel.instructions.title || "Model Instructions"}
