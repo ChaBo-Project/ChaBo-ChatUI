@@ -47,20 +47,36 @@
 	} as const;
 
 	const nModels: number = $page.data.models.filter((el: Model) => !el.unlisted).length;
+
+	// Longer configured app names need a smaller sidebar title so "New Chat" never gets squeezed
+	// into wrapping. Auto-picks a size by name length; PUBLIC_APP_NAME_FONT_SIZE (e.g. "1rem",
+	// "18px") overrides it directly, read at runtime so a deployment can tune it via its .env alone
+	// — no rebuild, same as PUBLIC_APP_BACKGROUND. A malformed override is ignored.
+	const appName = envPublic.PUBLIC_APP_NAME ?? "";
+	const autoTitleSizeClass =
+		appName.length > 18 ? "text-sm" : appName.length > 11 ? "text-base" : "text-lg";
+	const appNameFontSize = /^\d+(\.\d+)?(px|rem|em)$/.test(
+		envPublic.PUBLIC_APP_NAME_FONT_SIZE ?? ""
+	)
+		? envPublic.PUBLIC_APP_NAME_FONT_SIZE
+		: undefined;
 </script>
 
-<div class="sticky top-0 flex flex-none items-center justify-between px-3 py-3.5 max-sm:pt-0">
+<div class="sticky top-0 flex flex-none items-center justify-between gap-2 px-3 py-3.5 max-sm:pt-0">
 	<a
-		class="flex items-center rounded-xl text-lg font-semibold"
+		class="flex min-w-0 items-center gap-1 rounded-xl font-semibold {appNameFontSize
+			? ''
+			: autoTitleSizeClass}"
+		style={appNameFontSize ? `font-size: ${appNameFontSize}` : undefined}
 		href="{envPublic.PUBLIC_ORIGIN}{base}/"
 	>
-		<Logo classNames="mr-1" />
-		{envPublic.PUBLIC_APP_NAME}
+		<Logo classNames="shrink-0" />
+		{appName}
 	</a>
 	<a
 		href={`${base}/`}
 		on:click={handleNewChatClick}
-		class="flex rounded-lg border bg-app-surface px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 sm:text-smd"
+		class="flex shrink-0 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-0.5 text-center shadow-sm hover:shadow-none dark:border-gray-600 sm:text-smd"
 	>
 		New Chat
 	</a>
