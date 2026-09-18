@@ -107,7 +107,7 @@
 	{/if} -->
 
 	{#if currentModel.instructions}
-		<div class="mt-4 lg:col-span-2 lg:pl-24">
+		<div class="mt-4 lg:col-span-3 lg:mx-auto lg:w-2/3">
 			<div class="rounded-lg border border-app-surface bg-app-surface p-4">
 				<h3 class="mb-2 font-semibold text-gray-800 dark:text-gray-200">
 					{currentModel.instructions.title || "Model Instructions"}
