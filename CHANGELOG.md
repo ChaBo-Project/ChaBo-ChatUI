@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.3](https://github.com/ChaBo-Project/ChaBo-ChatUI/compare/chabo-chatui-v0.9.2...chabo-chatui-v0.9.3) (2026-09-18)
+
+
+### Bug Fixes
+
+* center model instructions box over example prompts ([ef125c3](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/ef125c31cac965dba292d931e21042e8a5b77162))
+* keep app-name headers from wrapping and squeezing neighbors ([2767178](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/2767178e550ac61790a12dbc3824674f6e751151))
+* keep app-name headers from wrapping and squeezing neighbors ([ec3ee1d](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/ec3ee1d73ac3ca7389f776ca5d1dc3715604087f))
+
 ## [0.9.2](https://github.com/ChaBo-Project/ChaBo-ChatUI/compare/chabo-chatui-v0.9.1...chabo-chatui-v0.9.2) (2026-09-15)
 
 
