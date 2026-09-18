@@ -55,9 +55,7 @@
 	const appName = envPublic.PUBLIC_APP_NAME ?? "";
 	const autoTitleSizeClass =
 		appName.length > 18 ? "text-sm" : appName.length > 11 ? "text-base" : "text-lg";
-	const appNameFontSize = /^\d+(\.\d+)?(px|rem|em)$/.test(
-		envPublic.PUBLIC_APP_NAME_FONT_SIZE ?? ""
-	)
+	const appNameFontSize = /^\d+(\.\d+)?(px|rem|em)$/.test(envPublic.PUBLIC_APP_NAME_FONT_SIZE ?? "")
 		? envPublic.PUBLIC_APP_NAME_FONT_SIZE
 		: undefined;
 </script>
