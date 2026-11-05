@@ -1,0 +1,25 @@
+FROM node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c AS build
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 HUSKY=0
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+ARG APP_BASE=/chat
+ENV APP_BASE=$APP_BASE MONGODB_URL=mongodb://127.0.0.1:27017
+RUN node --test scripts/managed-tests/*.test.mjs \
+    && npm run check \
+    && npm run build
+
+FROM node:24.22.1-bookworm-slim@sha256:be8204d4bd327363357f532187b752ff62759c31bedf98e9e18fc08c9cbd605c
+WORKDIR /app
+ARG VCS_REF=local
+LABEL org.opencontainers.image.revision=$VCS_REF
+COPY --from=build --chown=node:node /app/build ./build
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node package.json .env PRIVACY.md LICENSE ./
+COPY --chown=node:node scripts/runtime-env.mjs ./scripts/runtime-env.mjs
+USER node
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 BODY_SIZE_LIMIT=15728640
+EXPOSE 3000
+CMD ["node", "--import", "./scripts/runtime-env.mjs", "build/index.js"]

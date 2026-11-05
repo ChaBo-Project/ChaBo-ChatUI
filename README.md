@@ -6,6 +6,9 @@ A chat interface designed to work with **ChaBo**, a RAG (Retrieval-Augmented Gen
 
 This modified version includes:
 
+- **Managed document chat (opt-in)**: Native account, document-grounded chat and
+  speech integration at `/managed`; see [setup and boundaries](docs/managed-chat.md).
+
 - **File Upload Support**: GeoJSON and other multimodal file types with auto-submission
 - **RAG Integration**: Direct connection to ChaBo's LangServe streaming endpoints
 - **Model Instructions**: Display custom instructions per model configuration

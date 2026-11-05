@@ -1,0 +1,346 @@
+.managed {
+	font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	color: #243143;
+	background: #f3f6f8;
+	color-scheme: light;
+}
+.managed * {
+	box-sizing: border-box;
+}
+.managed {
+	margin: 0;
+}
+.managed header {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 18px 5vw;
+	background: #fff;
+	border-bottom: 1px solid #dce3e8;
+}
+.managed header > a:first-child {
+	font-size: 25px;
+	font-weight: 800;
+	color: #173b50;
+	text-decoration: none;
+}
+.managed .badge {
+	font-size: 12px;
+	border: 1px solid #d3e1e8;
+	border-radius: 20px;
+	padding: 3px 10px;
+	color: #486171;
+}
+.managed .reference {
+	margin-left: auto;
+	color: #17627b;
+	font-size: 14px;
+}
+.managed main {
+	display: grid;
+	grid-template-columns: 300px minmax(0, 1fr);
+	gap: 24px;
+	max-width: 1200px;
+	margin: 28px auto;
+	padding: 0 24px;
+}
+.managed aside,
+.managed .chat {
+	background: #fff;
+	border: 1px solid #dce3e8;
+	border-radius: 12px;
+	padding: 24px;
+}
+.managed h1 {
+	font-size: 25px;
+	line-height: 1.2;
+	margin: 0 0 12px;
+}
+.managed h2 {
+	font-size: 16px;
+	margin: 0 0 12px;
+}
+.managed aside section {
+	margin-top: 25px;
+	padding-top: 20px;
+	border-top: 1px solid #e6ebef;
+}
+.managed p {
+	margin: 8px 0;
+}
+.managed .muted {
+	color: #617181;
+	font-size: 13px;
+	overflow-wrap: anywhere;
+}
+.managed label {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	margin: 12px 0 6px;
+}
+.managed input,
+.managed select,
+.managed textarea {
+	display: block;
+	width: 100%;
+	font: inherit;
+	color: inherit;
+	background: #fff;
+	border: 1px solid #bac8d2;
+	border-radius: 6px;
+	padding: 9px;
+	margin-top: 4px;
+}
+.managed textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+.managed button {
+	font: 600 13px system-ui;
+	cursor: pointer;
+	background: #165f76;
+	color: #fff;
+	border: 1px solid #165f76;
+	border-radius: 6px;
+	padding: 10px 14px;
+	margin: 6px 4px 0 0;
+}
+.managed button.secondary {
+	color: #244a5d;
+	background: #f5f8fa;
+	border-color: #c4d1d9;
+}
+.managed button.danger {
+	background: #fff;
+	color: #a33434;
+	border-color: #dfb9b9;
+}
+.managed button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.managed input:focus-visible,
+.managed select:focus-visible,
+.managed textarea:focus-visible,
+.managed button:focus-visible,
+.managed a:focus-visible,
+.managed summary:focus-visible {
+	outline: 3px solid #80b8d5;
+	outline-offset: 2px;
+}
+.managed fieldset {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	min-width: 0;
+}
+.managed details {
+	font-size: 13px;
+	margin: 12px 0;
+}
+.managed summary {
+	cursor: pointer;
+	color: #486171;
+}
+.managed .chat {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+.managed .chat-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	border-bottom: 1px solid #e6ebef;
+	padding-bottom: 14px;
+}
+.managed #status {
+	padding: 12px 0;
+	color: #486171;
+	font-size: 13px;
+}
+.managed #error,
+.managed #rw-notice {
+	padding: 12px;
+	background: #fff5e9;
+	border: 1px solid #e4c18a;
+	border-radius: 6px;
+	font-size: 13px;
+	white-space: pre-wrap;
+}
+.managed #messages {
+	min-height: 260px;
+	max-height: 55vh;
+	overflow: auto;
+	padding: 10px 0;
+	flex: 1;
+}
+.managed .empty {
+	padding: 70px 10px;
+	text-align: center;
+	color: #82919d;
+}
+.managed .message {
+	padding: 14px 16px;
+	border-radius: 9px;
+	margin-bottom: 14px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+.managed .message.user {
+	background: #edf4f8;
+	margin-left: 36px;
+}
+.managed .message.assistant {
+	background: #f7f8fa;
+	margin-right: 20px;
+}
+.managed .message strong {
+	display: block;
+	color: #486171;
+	font-size: 12px;
+	letter-spacing: 0.03em;
+	margin-bottom: 8px;
+}
+.managed .message .content {
+	margin: 0;
+}
+.managed .source-label,
+.managed .transcription {
+	font-size: 12px;
+	color: #617181;
+	margin-top: 10px;
+}
+.managed .actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+}
+.managed .file-label {
+	display: inline-block;
+	padding: 9px;
+	border: 1px solid #c4d1d9;
+	border-radius: 6px;
+	font-size: 12px;
+	margin: 6px 0 0;
+	cursor: pointer;
+}
+.managed .file-label input {
+	width: 200px;
+	font-size: 11px;
+	padding: 0;
+	border: 0;
+}
+.managed #playback,
+.managed #audio-preview,
+.managed #recovery,
+.managed #recording {
+	background: #f5f8fa;
+	border: 1px solid #dce5eb;
+	border-radius: 8px;
+	padding: 14px;
+	margin: 12px 0;
+}
+.managed .playback-heading {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+.managed #playback label {
+	display: inline-block;
+	width: calc(50% - 8px);
+	margin-right: 5px;
+}
+.managed #segment-text {
+	font-size: 14px;
+	white-space: pre-wrap;
+}
+.managed audio {
+	display: block;
+	width: 100%;
+	height: 38px;
+	margin: 12px 0;
+}
+.managed #pending-id {
+	display: block;
+	font-size: 11px;
+	overflow-wrap: anywhere;
+}
+.managed .privacy {
+	font-size: 11px;
+	margin-top: 15px;
+}
+.managed #identity {
+	overflow-wrap: anywhere;
+}
+.managed #binding {
+	font-size: 11px;
+}
+.managed [hidden] {
+	display: none !important;
+}
+@media (max-width: 760px) {
+	.managed header {
+		padding: 14px 18px;
+		gap: 10px;
+	}
+	.managed .badge {
+		font-size: 10px;
+	}
+	.managed .reference {
+		font-size: 12px;
+	}
+	.managed main {
+		grid-template-columns: 1fr;
+		margin: 16px auto;
+		padding: 0 12px;
+		gap: 16px;
+	}
+	.managed aside,
+	.managed .chat {
+		padding: 18px;
+	}
+	.managed aside section {
+		margin-top: 16px;
+		padding-top: 14px;
+	}
+	.managed #messages {
+		max-height: 55vh;
+		min-height: 160px;
+	}
+	.managed .message.user {
+		margin-left: 15px;
+	}
+	.managed .message.assistant {
+		margin-right: 8px;
+	}
+	.managed .chat-heading {
+		gap: 8px;
+	}
+}
+
+.managed aside > #setup {
+	margin: 0;
+}
+.managed aside > #setup > summary {
+	font-size: 13px;
+	font-weight: 600;
+	margin-bottom: 14px;
+}
+@media (min-width: 761px) {
+	.managed aside > #setup > summary {
+		display: none;
+	}
+}
+
+.managed {
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+}
+.managed [hidden] {
+	display: none !important;
+}

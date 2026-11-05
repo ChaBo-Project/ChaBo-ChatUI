@@ -1,6 +1,5 @@
 <script lang="ts">
 	import "../styles/main.css";
-
 	import { onDestroy, onMount } from "svelte";
 	import { goto, invalidate } from "$app/navigation";
 	import { base } from "$app/paths";
@@ -24,7 +23,8 @@
 	import { serverCookieIsSet } from "$lib/utils/serverCookieIsSet";
 	import { surfaceOverrideStyleTag } from "$lib/utils/surfaceOverride";
 
-	export let data;
+	import type { LayoutData } from "./$types";
+	export let data: LayoutData;
 
 	let isNavOpen = false;
 	let isNavCollapsed = false;
@@ -121,6 +121,7 @@
 	const settings = createSettingsStore(data.settings);
 
 	onMount(async () => {
+		if ($page.route.id === "/managed") return;
 		// The document response carried a `Set-Cookie` for the session; ask the server whether the
 		// browser actually kept it. If not, every write lands under a throwaway session and the app
 		// is broken in a way whose symptoms point nowhere useful, so say so up front.
@@ -221,57 +222,61 @@
 	{/if}
 </svelte:head>
 
-{#if !$settings.ethicsModalAccepted && $page.url.pathname !== `${base}/privacy` && envPublic.PUBLIC_APP_DISCLAIMER === "1"}
-	<DisclaimerModal on:close={() => ($settings.ethicsModalAccepted = true)} />
-{/if}
-
-<ExpandNavigation
-	isCollapsed={isNavCollapsed}
-	on:click={() => (isNavCollapsed = !isNavCollapsed)}
-	classNames="absolute inset-y-0 z-10 my-auto {!isNavCollapsed
-		? 'left-[280px]'
-		: 'left-0'} *:transition-transform"
-/>
-
-<!-- The banner sits outside the app grid so that showing it does not consume one of its rows. -->
-<div class="flex h-full w-screen flex-col">
-	{#if cookiesBlocked}
-		<CookiesBlockedBanner />
+{#if $page.route.id === "/managed"}
+	<slot />
+{:else}
+	{#if !$settings.ethicsModalAccepted && $page.url.pathname !== `${base}/privacy` && envPublic.PUBLIC_APP_DISCLAIMER === "1"}
+		<DisclaimerModal on:close={() => ($settings.ethicsModalAccepted = true)} />
 	{/if}
-	<div
-		class="grid min-h-0 w-full flex-1 grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd {!isNavCollapsed
-			? 'md:grid-cols-[280px,1fr]'
-			: 'md:grid-cols-[0px,1fr]'} transition-[300ms] [transition-property:grid-template-columns] dark:text-gray-300 md:grid-rows-[1fr]"
-	>
-		<MobileNav
-			isOpen={isNavOpen}
-			on:toggle={(ev) => (isNavOpen = ev.detail)}
-			title={mobileNavTitle}
-		>
-			<NavMenu
-				conversations={data.conversations}
-				user={data.user}
-				canLogin={data.user === undefined && data.loginEnabled}
-				on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
-				on:deleteConversation={(ev) => deleteConversation(ev.detail)}
-				on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
-			/>
-		</MobileNav>
-		<nav
-			class=" grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden *:w-[280px] max-md:hidden"
-		>
-			<NavMenu
-				conversations={data.conversations}
-				user={data.user}
-				canLogin={data.user === undefined && data.loginEnabled}
-				on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
-				on:deleteConversation={(ev) => deleteConversation(ev.detail)}
-				on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
-			/>
-		</nav>
-		{#if currentError}
-			<Toast message={currentError} />
+
+	<ExpandNavigation
+		isCollapsed={isNavCollapsed}
+		on:click={() => (isNavCollapsed = !isNavCollapsed)}
+		classNames="absolute inset-y-0 z-10 my-auto {!isNavCollapsed
+			? 'left-[280px]'
+			: 'left-0'} *:transition-transform"
+	/>
+
+	<!-- The banner sits outside the app grid so that showing it does not consume one of its rows. -->
+	<div class="flex h-full w-screen flex-col">
+		{#if cookiesBlocked}
+			<CookiesBlockedBanner />
 		{/if}
-		<slot />
+		<div
+			class="grid min-h-0 w-full flex-1 grid-cols-1 grid-rows-[auto,1fr] overflow-hidden text-smd {!isNavCollapsed
+				? 'md:grid-cols-[280px,1fr]'
+				: 'md:grid-cols-[0px,1fr]'} transition-[300ms] [transition-property:grid-template-columns] dark:text-gray-300 md:grid-rows-[1fr]"
+		>
+			<MobileNav
+				isOpen={isNavOpen}
+				on:toggle={(ev) => (isNavOpen = ev.detail)}
+				title={mobileNavTitle}
+			>
+				<NavMenu
+					conversations={data.conversations}
+					user={data.user}
+					canLogin={data.user === undefined && data.loginEnabled}
+					on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
+					on:deleteConversation={(ev) => deleteConversation(ev.detail)}
+					on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
+				/>
+			</MobileNav>
+			<nav
+				class=" grid max-h-screen grid-cols-1 grid-rows-[auto,1fr,auto] overflow-hidden *:w-[280px] max-md:hidden"
+			>
+				<NavMenu
+					conversations={data.conversations}
+					user={data.user}
+					canLogin={data.user === undefined && data.loginEnabled}
+					on:shareConversation={(ev) => shareConversation(ev.detail.id, ev.detail.title)}
+					on:deleteConversation={(ev) => deleteConversation(ev.detail)}
+					on:editConversationTitle={(ev) => editConversationTitle(ev.detail.id, ev.detail.title)}
+				/>
+			</nav>
+			{#if currentError}
+				<Toast message={currentError} />
+			{/if}
+			<slot />
+		</div>
 	</div>
-</div>
+{/if}
