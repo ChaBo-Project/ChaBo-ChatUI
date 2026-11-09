@@ -6,6 +6,7 @@ import type {
 	TextGenerationStreamOutputWithToolsAndWebSources,
 } from "../endpoints";
 import { logger } from "$lib/server/logger";
+import { parseMarkdownSources, type CitedSource } from "$lib/utils/sources";
 import { env } from "$env/dynamic/private";
 
 export const endpointLangserveStreamingParametersSchema = z.object({
@@ -189,8 +190,7 @@ async function* handleStreamingResponse(
 	let generatedText = "";
 	let tokenId = 0;
 	let accumulatedData = "";
-	// Update the webSources type to match the type definition
-	const webSources: { uri: string; title: string }[] = [];
+	const webSources: CitedSource[] = [];
 
 	while (!stop) {
 		const out = (await reader?.read()) ?? { done: false, value: undefined };
@@ -279,22 +279,11 @@ async function* handleStreamingResponse(
 						console.log("Parsing sources from markdown text");
 						console.log("Full text to parse:", data);
 
-						const sourceRegex = /\[([^\]]+)\]\(((?:doc|https?):\/\/[^)]+)\)/g;
-						let match;
-						let matchCount = 0;
+						// Keeps each source's citation number when the line states it ("- [n] ...").
+						const parsed = parseMarkdownSources(data);
+						webSources.push(...parsed);
 
-						while ((match = sourceRegex.exec(data)) !== null) {
-							matchCount++;
-							console.log(`Match ${matchCount}:`, match[1], "->", match[2]);
-							const title = match[1];
-							const uri = match[2];
-
-							// Add source without originalNumber since it's not in the type definition
-							webSources.push({ uri, title });
-							console.log("Added source:", { uri, title });
-						}
-
-						console.log("Total matches found:", matchCount);
+						console.log("Total matches found:", parsed.length);
 						console.log("Final webSources:", webSources);
 					}
 
