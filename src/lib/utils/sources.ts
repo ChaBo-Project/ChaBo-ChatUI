@@ -27,3 +27,37 @@ export function parseMarkdownSources(text: string): CitedSource[] {
 	}
 	return sources;
 }
+
+// "[2]", grouped "[1, 3]" and ranged "[1-3]" / "[1–3]" citations in answer text.
+const CITATION = /\[([\d,\s\-–]+)\]/g;
+// Widest "[a-b]" range read as citations; wider spans (e.g. years) are not citations.
+const MAX_CITATION_RANGE = 50;
+
+/** The sorted, unique citation numbers found in an answer's text. */
+export function citedNumbers(text: string): number[] {
+	const numbers = new Set<number>();
+	for (const [, group] of text.matchAll(CITATION)) {
+		for (const part of group.split(",")) {
+			const bounds = (part.match(/\d+/g) ?? []).map(Number);
+			if (bounds.length === 1) {
+				numbers.add(bounds[0]);
+			} else if (bounds.length === 2 && bounds[1] >= bounds[0]) {
+				if (bounds[1] - bounds[0] <= MAX_CITATION_RANGE) {
+					for (let n = bounds[0]; n <= bounds[1]; n++) numbers.add(n);
+				}
+			}
+		}
+	}
+	return [...numbers].sort((a, b) => a - b);
+}
+
+/**
+ * The citation number to show on the chip for `source`, the `index`-th listed source.
+ *
+ * Uses the number the Orchestrator sent. Sources without one (older Orchestrators, stored
+ * conversations) fall back to pairing the listed sources with the cited numbers in order,
+ * which holds while the list contains exactly the cited sources.
+ */
+export function sourceLabel(source: CitedSource, index: number, cited: number[]): number {
+	return source.number ?? (cited[index] || index + 1);
+}

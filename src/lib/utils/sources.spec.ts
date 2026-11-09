@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseMarkdownSources } from "./sources";
+import { citedNumbers, parseMarkdownSources, sourceLabel } from "./sources";
 
 describe("parseMarkdownSources", () => {
 	it("reads the citation number from numbered source lines", () => {
@@ -33,5 +33,47 @@ describe("parseMarkdownSources", () => {
 
 	it("returns nothing for a block without links", () => {
 		expect(parseMarkdownSources("**Sources:**\n- [1] Untitled\n")).toEqual([]);
+	});
+});
+
+describe("citedNumbers", () => {
+	it("finds single, grouped and ranged citations, sorted and unique", () => {
+		expect(citedNumbers("A [4]. B [2, 7]. C [4]. D [9-11]. E [13–14].")).toEqual([
+			2, 4, 7, 9, 10, 11, 13, 14,
+		]);
+	});
+
+	it("ignores reversed and implausibly wide ranges", () => {
+		expect(citedNumbers("Between [5-2] and [1900-2024].")).toEqual([]);
+	});
+
+	it("returns nothing for text without citations", () => {
+		expect(citedNumbers("No citations here.")).toEqual([]);
+	});
+});
+
+describe("sourceLabel", () => {
+	it("uses the number the source carries", () => {
+		expect(sourceLabel({ uri: "doc://#", title: "A", number: 4 }, 0, [2])).toBe(4);
+	});
+
+	it("labels every listed source with its own number, cited or not", () => {
+		const sources = [1, 2, 3, 4].map((number) => ({ uri: "doc://#", title: `D${number}`, number }));
+		expect(sources.map((source, index) => sourceLabel(source, index, [2, 4]))).toEqual([
+			1, 2, 3, 4,
+		]);
+	});
+
+	it("falls back to pairing with the cited numbers when no number was sent", () => {
+		const sources = [
+			{ uri: "doc://#", title: "D2" },
+			{ uri: "doc://#", title: "D4" },
+		];
+		const cited = citedNumbers("Grouped [2, 4].");
+		expect(sources.map((source, index) => sourceLabel(source, index, cited))).toEqual([2, 4]);
+	});
+
+	it("falls back to the position when there are more sources than citations", () => {
+		expect(sourceLabel({ uri: "doc://#", title: "A" }, 2, [5])).toBe(3);
 	});
 });
