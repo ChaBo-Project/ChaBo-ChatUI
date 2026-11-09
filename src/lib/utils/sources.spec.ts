@@ -37,14 +37,12 @@ describe("parseMarkdownSources", () => {
 });
 
 describe("citedNumbers", () => {
-	it("finds single, grouped and ranged citations, sorted and unique", () => {
-		expect(citedNumbers("A [4]. B [2, 7]. C [4]. D [9-11]. E [13–14].")).toEqual([
-			2, 4, 7, 9, 10, 11, 13, 14,
-		]);
+	it("finds single and grouped citations, sorted and unique", () => {
+		expect(citedNumbers("A [4]. B [2, 7]. C [4][1].")).toEqual([1, 2, 4, 7]);
 	});
 
-	it("ignores reversed and implausibly wide ranges", () => {
-		expect(citedNumbers("Between [5-2] and [1900-2024].")).toEqual([]);
+	it("does not read ranges as citations", () => {
+		expect(citedNumbers("Rated on a scale of [1-5].")).toEqual([]);
 	});
 
 	it("returns nothing for text without citations", () => {
