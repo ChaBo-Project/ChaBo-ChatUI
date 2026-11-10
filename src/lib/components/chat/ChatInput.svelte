@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { env as envPublic } from "$env/dynamic/public";
 	import { createEventDispatcher, onMount } from "svelte";
 
 	export let value = "";
@@ -48,8 +49,28 @@
 		}
 	}
 
+	function isEmbedded(): boolean {
+		if (!browser) return false;
+		try {
+			return window.self !== window.top;
+		} catch {
+			// A cross-origin parent can block access to window.top, which also means we're embedded
+			return true;
+		}
+	}
+
+	// PUBLIC_CHAT_INPUT_AUTOFOCUS: "true" (default) = always focus, "false" = never focus,
+	// "auto" = focus unless embedded in an iframe. Unknown values behave like "true".
+	function shouldAutofocus(): boolean {
+		const mode = (envPublic.PUBLIC_CHAT_INPUT_AUTOFOCUS || "true").trim().toLowerCase();
+		if (mode === "false") return false;
+		if (mode === "auto") return !isEmbedded();
+		return true;
+	}
+
 	onMount(() => {
-		if (!isVirtualKeyboard()) {
+		// Touch devices never autofocus, so the on-screen keyboard doesn't pop up uninvited
+		if (!isVirtualKeyboard() && shouldAutofocus()) {
 			textareaElement.focus();
 		}
 	});
