@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.4](https://github.com/ChaBo-Project/ChaBo-ChatUI/compare/chabo-chatui-v0.9.3...chabo-chatui-v0.9.4) (2026-11-10)
+
+
+### Bug Fixes
+
+* **chat:** default PUBLIC_CHAT_INPUT_AUTOFOCUS ([234627d](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/234627d845e8c31fc16e4d28c2fbb44142072f42))
+* **chat:** default PUBLIC_CHAT_INPUT_AUTOFOCUS ([621ea97](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/621ea975047980fd87681ba918e43b16c54f15ec))
+* label source chips with their citation number ([01f0c8c](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/01f0c8c75dd76ec7a17dee1b548f70150669dae2))
+* label source chips with their citation numbers ([54f6413](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/54f64135d5f06a58541f4ddabd4160669daee269))
+* read only single and grouped citations in the fallback ([4be4911](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/4be4911ae21aa422c0fcb80348882557b0e54290))
+* read source numbers from the Sources block ([e7f769a](https://github.com/ChaBo-Project/ChaBo-ChatUI/commit/e7f769af3809f6220dbfed3ead87943ca27d8ee4))
+
 ## [0.9.3](https://github.com/ChaBo-Project/ChaBo-ChatUI/compare/chabo-chatui-v0.9.2...chabo-chatui-v0.9.3) (2026-09-18)
 
 
