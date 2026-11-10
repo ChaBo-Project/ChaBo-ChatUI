@@ -82,6 +82,15 @@
 <div
 	class="scrollbar-custom flex flex-col gap-1 overflow-y-auto rounded-r-xl from-app-surface px-3 pb-3 pt-2 text-[.9rem] dark:from-app-surface/30 max-sm:bg-gradient-to-t md:bg-gradient-to-l"
 >
+	{#if envPublic.PUBLIC_MANAGED_CHAT_ENABLED === "true"}
+		<a
+			href={base + "/managed"}
+			data-sveltekit-reload
+			class="mx-3 my-2 rounded-lg border border-gray-300 p-3 text-sm font-semibold dark:border-gray-700"
+			>Chat with documents</a
+		>
+	{/if}
+
 	{#await groupedConversations}
 		{#if $page.data.nConversations > 0}
 			<div class="overflow-y-hidden">
