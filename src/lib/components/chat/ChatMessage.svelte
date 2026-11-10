@@ -38,6 +38,7 @@
 	import { enhance } from "$app/forms";
 	import { browser } from "$app/environment";
 	import type { WebSearchSource } from "$lib/types/WebSearch";
+	import { citedNumbers, sourceLabel } from "$lib/utils/sources";
 
 	function addInlineCitations(md: string, webSearchSources: WebSearchSource[] = []): string {
 		const linkStyle =
@@ -177,6 +178,9 @@
 	$: messageFinalAnswer = message.updates?.find(
 		({ type }) => type === MessageUpdateType.FinalAnswer
 	) as MessageFinalAnswerUpdate;
+
+	// Citation numbers in the answer; only used to label sources sent without a number.
+	$: citedInAnswer = citedNumbers(messageFinalAnswer?.text ?? "");
 
 	// $: {
 	// 	console.log('RAG Debug - Raw message:', message);
@@ -383,67 +387,14 @@
 				</div>
 			{/if}
 
-			<!-- Endpoint web sources Original -->
-			<!-- {#if messageFinalAnswer?.webSources && messageFinalAnswer.webSources.length}
-				<div class="mt-4 text-sm">
-					<div class="text-gray-400 mb-2">Sources:</div>
-					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-						{#each messageFinalAnswer.webSources as { uri, title }, index}
-							<div
-								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
-							>
-								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
-									[{index + 1}]
-								</span>
-								<img
-									class="h-3.5 w-3.5 rounded"
-									src="/favicon.ico"
-									alt="Document icon"
-								/>
-								<div>{title}</div>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if} -->
-
-			<!-- SIMPLIFIED SOURCES DISPLAY  -->
-			<!-- {#if messageFinalAnswer}
-				<div class="mt-4 text-sm">
-					<div class="text-gray-400 mb-2">Sources:</div>
-					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5"></div>
-					{#if messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
-						{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
-						{@const uniqueCitations = [...new Set(allCitations.map(match => parseInt(match.slice(1, -1))))].sort((a, b) => a - b)}
-						{#each messageFinalAnswer.webSources as { uri, title }, index}
-							<div
-								class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-white px-2 py-1.5 leading-none dark:border-gray-800 dark:bg-gray-900"
-							>
-								<span class="text-xs font-medium text-gray-500 dark:text-gray-400 mr-1">
-									[{uniqueCitations[index] || index + 1}]
-								</span>
-								<img
-									class="h-3.5 w-3.5 rounded"
-									src="/favicon.ico"
-									alt="Document icon"
-								/>
-								<div>{title}</div>
-							</div>
-						{/each}
-					{/if}
-				</div>
-			{/if} -->
-
 			<!-- SIMPLIFIED SOURCES DISPLAY  -->
 			{#if messageFinalAnswer && messageFinalAnswer.webSources && messageFinalAnswer.webSources.length > 0}
 				<div class="mt-4 text-sm">
 					<div class="mb-2 text-gray-400">Sources:</div>
 					<div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-						{#each messageFinalAnswer.webSources as { uri, title }, index}
-							{@const allCitations = messageFinalAnswer.text.match(/\[(\d+)\]/g) || []}
-							{@const uniqueCitations = [
-								...new Set(allCitations.map((match) => parseInt(match.slice(1, -1)))),
-							].sort((a, b) => a - b)}
+						{#each messageFinalAnswer.webSources as source, index}
+							{@const { uri, title } = source}
+							{@const label = sourceLabel(source, index, citedInAnswer)}
 							{@const isHttpSource = uri?.startsWith("http://") || uri?.startsWith("https://")}
 							{#if isHttpSource}
 								<a
@@ -453,7 +404,7 @@
 									rel="noopener noreferrer"
 								>
 									<span class="mr-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-										[{uniqueCitations[index] || index + 1}]
+										[{label}]
 									</span>
 									<img class="h-3.5 w-3.5 rounded" src="/favicon.ico" alt="Document icon" />
 									<div>{title ?? uri}</div>
@@ -463,7 +414,7 @@
 									class="flex items-center gap-2 whitespace-nowrap rounded-lg border bg-app-surface px-2 py-1.5 leading-none dark:border-gray-800"
 								>
 									<span class="mr-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-										[{uniqueCitations[index] || index + 1}]
+										[{label}]
 									</span>
 									<img class="h-3.5 w-3.5 rounded" src="/favicon.ico" alt="Document icon" />
 									<div>{title ?? uri}</div>

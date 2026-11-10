@@ -1,5 +1,6 @@
 import type { Conversation } from "$lib/types/Conversation";
 import type { Message } from "$lib/types/Message";
+import type { CitedSource } from "$lib/utils/sources";
 import type { TextGenerationStreamOutput, TextGenerationStreamToken } from "@huggingface/inference";
 import { endpointTgi, endpointTgiParametersSchema } from "./tgi/endpointTgi";
 import { z } from "zod";
@@ -53,7 +54,7 @@ interface CommonEndpoint {
 }
 export type TextGenerationStreamOutputWithToolsAndWebSources = TextGenerationStreamOutput & {
 	token: TextGenerationStreamToken & { toolCalls?: ToolCall[] };
-	webSources?: { uri: string; title: string }[];
+	webSources?: CitedSource[];
 };
 // type signature for the endpoint
 export type Endpoint = (

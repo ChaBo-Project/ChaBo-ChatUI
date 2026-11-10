@@ -1,5 +1,6 @@
 import type { WebSearchSource } from "$lib/types/WebSearch";
 import type { ToolCall, ToolResult } from "$lib/types/Tool";
+import type { CitedSource } from "$lib/utils/sources";
 
 export type MessageUpdate =
 	| MessageStatusUpdate
@@ -124,5 +125,5 @@ export interface MessageFinalAnswerUpdate {
 	type: MessageUpdateType.FinalAnswer;
 	text: string;
 	interrupted: boolean;
-	webSources?: { uri: string; title: string }[];
+	webSources?: CitedSource[];
 }
